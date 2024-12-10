@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Expanding Navigation</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            height: 100vh;
+            background-color: #f5f5f5;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 0;
+        }
+
+        .nav-container {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            transition: all 0.3s ease-in-out;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .nav-btn {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background-color: #007bff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            font-size: 24px;
+            cursor: pointer;
+            transition: all 0.3s ease-in-out;
+        }
+
+        .nav-btn:hover {
+            transform: scale(1.1);
+        }
+
+        .nav-links {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-top: 10px;
+            position: absolute;
+            bottom: 70px;
+            left: 50%;
+            transform: translateX(-50%);
+            visibility: hidden;
+            opacity: 0;
+            transition: opacity 0.3s ease-in-out, visibility 0.3s ease-in-out;
+        }
+
+        .nav-container.open .nav-links {
+            visibility: visible;
+            opacity: 1;
+        }
+
+        .nav-container.open .nav-btn {
+            width: 200px;
+            height: 50px;
+            border-radius: 25px;
+        }
+
+        .nav-link {
+            padding: 10px 20px;
+            color: #007bff;
+            text-decoration: none;
+            font-size: 16px;
+            margin: 0 10px;
+            border-radius: 25px;
+            transition: background-color 0.3s;
+        }
+
+        .nav-link:hover {
+            background-color: #e0e0e0;
+        }
+
+        .nav-container:hover .nav-links {
+            visibility: visible;
+            opacity: 1;
+        }
+
+    </style>
+</head>
+<body>
+
+    <div class="nav-container">
+        <div class="nav-btn" id="nav-btn">
+            <i class="fas fa-circle"></i> <!-- Replaced hamburger with circle -->
+        </div>
+        <div class="nav-links">
+            <a href="#" class="nav-link">Home</a>
+            <a href="#" class="nav-link">About</a>
+            <a href="#" class="nav-link">Services</a>
+            <a href="#" class="nav-link">Contact</a>
+        </div>
+    </div>
+
+    <script>
+        const navBtn = document.getElementById('nav-btn');
+        const navContainer = document.querySelector('.nav-container');
+        const navLinks = document.querySelector('.nav-links');
+
+        // Toggle the nav links when the button is clicked
+        navBtn.addEventListener('click', () => {
+            navContainer.classList.toggle('open');
+        });
+
+        // Keep the navigation open if hovering over the nav links
+        navContainer.addEventListener('mouseenter', () => {
+            if (!navContainer.classList.contains('open')) {
+                navContainer.classList.add('open');
+            }
+        });
+
+        navContainer.addEventListener('mouseleave', () => {
+            if (!navLinks.matches(':hover')) {
+                navContainer.classList.remove('open');
+            }
+        });
+    </script>
+
+</body>
+</html>
