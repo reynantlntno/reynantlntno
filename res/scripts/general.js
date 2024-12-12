@@ -31,45 +31,73 @@ imageContainer.addEventListener('animationend', () => {
     textElement.classList.add('typing');
 });
 
-// Sample project data 
-const projects = [
-    {
-        title: "Project 1",
-        description: "An innovative web app for managing tasks with real-time collaboration.",
-        technologies: "React, Node.js, WebSockets",
-        demoLink: "https://example.com/project1",
-        screenshots: ["res/imgs/project1-screenshot1.jpg", "res/imgs/project1-screenshot2.jpg"]
-    },
-    {
-        title: "Project 2",
-        description: "A creative portfolio website built with a modern front-end stack.",
-        technologies: "HTML, CSS, JavaScript",
-        demoLink: "https://example.com/project2",
-        screenshots: ["res/imgs/project2-screenshot1.jpg", "res/imgs/project2-screenshot2.jpg"]
-    },
-    // Add more projects here
-];
+// Fetch skills from the API
+fetch('/.netlify/functions/get-skills')
+    .then(res => res.json())
+    .then(skills => {
+        const skillsList = document.querySelector('.horizontal-list');
+        skillsList.innerHTML = ""; // Clear existing list
+
+        skills.forEach(skill => {
+            const skillItem = document.createElement('li');
+            skillItem.innerHTML = `<i class="${skill.icon}"></i> ${skill.name}`;
+            skillsList.appendChild(skillItem);
+        });
+    })
+    .catch(error => console.error('Error fetching skills:', error));
+
+// Fetch projects from the API
+fetch('/.netlify/functions/get-projects')
+    .then(res => res.json())
+    .then(projects => {
+        const carouselContainer = document.querySelector('.carousel-container');
+        carouselContainer.innerHTML = ""; // Clear existing projects
+
+        projects.forEach((project, index) => {
+            const projectCard = `
+                <div class="project-card" onclick="openModal(${index})">
+                    <div class="card-header">
+                        <img src="${project.screenshots[0]}" alt="${project.name}" class="cover-photo"> 
+                    </div>
+                    <div class="card-body">
+                        <h3 class="project-title">${project.name}</h3>
+                        <p class="project-description">${project.description}</p>
+                    </div>
+                </div>
+            `;
+            carouselContainer.innerHTML += projectCard;
+        });
+    })
+    .catch(error => console.error('Error fetching projects:', error));
 
 // Open modal with project details
 function openModal(index) {
     const modal = document.getElementById('modal');
-    const project = projects[index];
 
-    document.getElementById('modal-title').innerText = project.title;
-    document.getElementById('modal-description').innerText = project.description;
-    document.getElementById('modal-technologies').innerText = project.technologies;
-    document.getElementById('modal-demo').href = project.demoLink;
-    document.getElementById('modal-demo').innerText = project.demoLink ? "Live Demo" : "Demo Unavailable";
+    // Fetch project details again to ensure you have the latest data
+    fetch('/.netlify/functions/get-projects')
+        .then(res => res.json())
+        .then(projects => {
+            const project = projects[index];
 
-    const screenshotsContainer = document.getElementById('modal-screenshots');
-    screenshotsContainer.innerHTML = "";
-    project.screenshots.forEach(img => {
-        const imgElement = document.createElement('img');
-        imgElement.src = img;
-        screenshotsContainer.appendChild(imgElement);
-    });
+            document.getElementById('modal-title').innerText = project.name;
+            document.getElementById('modal-description').innerText = project.description;
+            document.getElementById('modal-technologies').innerText = project.technologies;
+            document.getElementById('modal-demo').href = project.demoLink;
+            document.getElementById('modal-demo').innerText = project.demoLink ? "Live Demo" : "Demo Unavailable";
 
-    modal.style.display = "flex";
+            const screenshotsContainer = document.getElementById('modal-screenshots');
+            screenshotsContainer.innerHTML = "";
+            project.screenshots.forEach(img => {
+                const imgElement = document.createElement('img');
+                imgElement.src = img;
+                imgElement.alt = project.name + ' screenshot'; // Add alt text for accessibility
+                screenshotsContainer.appendChild(imgElement);
+            });
+
+            modal.style.display = "flex";
+        })
+        .catch(error => console.error('Error fetching project details:', error));
 }
 
 // Close modal
@@ -84,36 +112,24 @@ window.onclick = function(event) {
     }
 }
 
-// Example of dynamically generating the certifications section
-const certifications = [
-    {
-        image: "res/imgs/cert1.jpg",
-        title: "Certificate in Web Development - Coursera"
-    },
-    {
-        image: "res/imgs/cert2.jpg",
-        title: "Certificate in Python Programming - edX"
-    },
-    // Add more certifications here
-];
+// Fetch certifications from the API
+fetch('/.netlify/functions/get-certifications')
+    .then(res => res.json())
+    .then(certifications => {
+        const certificatesContainer = document.querySelector('.certificates-container');
+        certificatesContainer.innerHTML = ""; // Clear existing certifications
 
-// Dynamically add certificates to the section
-const certificatesContainer = document.querySelector('.certificates-container');
-certifications.forEach(cert => {
-    const certDiv = document.createElement('div');
-    certDiv.classList.add('certificate');
-
-    const img = document.createElement('img');
-    img.src = cert.image;
-    img.alt = cert.title;
-    certDiv.appendChild(img);
-
-    const text = document.createElement('p');
-    text.textContent = cert.title;
-    certDiv.appendChild(text);
-
-    certificatesContainer.appendChild(certDiv);
-});
+        certifications.forEach(cert => {
+            const certDiv = `
+                <div class="certificate">
+                    <img src="${cert.image}" alt="${cert.name}">
+                    <p>${cert.name}</p>
+                </div>
+            `;
+            certificatesContainer.innerHTML += certDiv;
+        });
+    })
+    .catch(error => console.error('Error fetching certifications:', error));
 
 // Detect when the footer is in view and hide the nav container
 const footer = document.querySelector('.footer');
