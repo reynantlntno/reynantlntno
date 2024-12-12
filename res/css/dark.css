@@ -631,80 +631,97 @@ body {
 .sixth-section {
     text-align: center;
     padding: 50px 20px;
-    background-color: #333; /* Dark background */
-    color: #f5f5f5; /* Light text */
+    background-color: #333; /* Light background */
+    font-family: 'Source Code Pro', monospace; /* Modern font style */
 }
 
-.sixth-section h2 {
-    font-size: 32px;
-    color: #007bff;
-    margin-bottom: 30px;
-}
-
+/* Contact Container */
 .contact-container {
     display: flex;
     justify-content: space-between;
     gap: 30px;
     max-width: 1200px;
     margin: 0 auto;
-    flex-wrap: wrap; /* Allow wrapping for smaller screens */
+    flex-wrap: wrap; /* Responsive layout for smaller screens */
 }
 
-.contact-form,
+/* Contact Form Styling */
+.contact-form {
+    width: 48%;
+    background-color: #333; /* White form background */
+    padding: 30px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1); /* Subtle shadow */
+    border-radius: 8px;
+    border: 2px solid #007bff;
+}
+
+.contact-form h3 {
+    font-size: 24px;
+    color: #007bff;
+    margin-bottom: 20px;
+}
+
+/* Form Elements */
+.contact-form label {
+    font-size: 16px;
+    color: white;
+    margin-bottom: 8px;
+    text-align: left;
+    display: block;
+}
+
+.contact-form input,
+.contact-form textarea {
+    width: 100%;
+    padding: 10px;
+    font-size: 16px;
+    margin-bottom: 15px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    background-color: #333; /* Matches section background */
+    color: white;
+    font-family: 'Source Code Pro', monospace; /* Consistent font */
+}
+
+.contact-form textarea {
+    resize: vertical;
+    min-height: 150px;
+}
+
+.contact-form button {
+    background-color: transparent;
+    color: white;
+    padding: 12px 20px;
+    border: 2px solid #007bff;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    font-family: 'Source Code Pro', monospace; /* Stylish button font */
+    transition: background-color 0.3s ease, transform 0.3s ease;
+}
+
+.contact-form button:hover {
+    background-color: #007bff; /* Darker blue on hover */
+    transform: scale(1.05); /* Slight grow effect */
+}
+
+/* Contact Details Styling */
 .contact-details {
     width: 48%;
-    background-color: #444; /* Dark background for forms */
+    background-color: #333; /* White form background */
     padding: 30px;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2); /* Darker shadow */
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1); /* Subtle shadow for details */
     border-radius: 8px;
-    border: 1px solid #555; /* Dark border */
+    border: 2px solid #007bff;
 }
 
-.contact-form h3,
 .contact-details h3 {
     font-size: 24px;
     color: #007bff;
     margin-bottom: 20px;
 }
 
-.contact-form form {
-    display: flex;
-    flex-direction: column;
-}
-
-.contact-form label {
-    font-size: 16px;
-    color: #f5f5f5; /* Light text */
-    margin-bottom: 8px;
-    text-align: left;
-}
-
-.contact-form input,
-.contact-form textarea {
-    padding: 10px;
-    font-size: 16px;
-    margin-bottom: 15px;
-    border: 1px solid #555; /* Dark border */
-    border-radius: 5px;
-    background-color: #333; /* Dark input background */
-    color: #f5f5f5; /* Light text */
-}
-
-.contact-form button {
-    background-color: #007bff;
-    color: white;
-    padding: 10px 20px;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    font-size: 16px;
-    transition: background-color 0.3s;
-}
-
-.contact-form button:hover {
-    background-color: #0056b3;
-}
-
+/* Contact List Styling */
 .contact-details ul {
     list-style-type: none;
     padding: 0;
@@ -713,55 +730,68 @@ body {
 
 .contact-details li {
     font-size: 18px;
-    color: #f5f5f5; /* Light text */
+    color: white;
     margin-bottom: 15px;
     display: flex;
     align-items: center;
-    background-color: #444; /* Dark background */
+    background-color: #333;
     padding: 12px;
     border-radius: 8px;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    transition: background-color 0.3s, transform 0.3s;
+    transition: background-color 0.3s ease, transform 0.3s ease;
 }
 
 .contact-details li:hover {
     background-color: #007bff;
     color: white;
-    transform: scale(1.05);
+    transform: scale(1.05); /* Interactive hover effect */
 }
 
 .contact-details li i {
     margin-right: 15px;
-    color: #007bff;
+    color: white; /* Highlight icon */
+    font-size: 20px; /* Slightly larger icons */
 }
 
 .contact-details a {
-    color: inherit;
+    color: inherit; /* Inherit color for hover effects */
     text-decoration: none;
 }
 
-/* Responsive Styling for Dark Mode */
+/* Avatar Styling */
+.contact-details .avatar {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 15px;
+}
+
+.contact-details .avatar img {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    object-fit: cover;
+}
+
+/* Responsive Styling */
 @media (max-width: 768px) {
     .contact-container {
         flex-direction: column;
-        gap: 20px;
+        gap: 20px; /* Adjust gap for smaller screens */
     }
 
     .contact-form,
     .contact-details {
-        width: 100%; /* Full width */
-    }
-
-    .sixth-section h2 {
-        font-size: 28px; /* Adjust header size for smaller screens */
+        width: 100%; /* Full-width for smaller screens */
     }
 
     .contact-form button {
         font-size: 14px;
-        padding: 8px 15px; /* Button size for smaller screens */
+        padding: 10px 15px; /* Smaller buttons */
     }
 
     .contact-details li {
-        font-size: 16px; /* Font size for better readability */
+        font-size: 16px; /* Adjust font size for readability */
     }
 }

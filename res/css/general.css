@@ -520,85 +520,97 @@ color: #777;
 .sixth-section {
     text-align: center;
     padding: 50px 20px;
-    background-color: #f9f9f9;
+    background-color: #f9f9f9; /* Light background */
+    font-family: 'Source Code Pro', monospace; /* Modern font style */
 }
 
-.sixth-section h2 {
-    font-size: 32px;
-    color: #007bff;
-    margin-bottom: 30px;
-}
-
+/* Contact Container */
 .contact-container {
     display: flex;
     justify-content: space-between;
     gap: 30px;
     max-width: 1200px;
     margin: 0 auto;
-    flex-wrap: wrap; /* Allows wrapping for smaller screens */
+    flex-wrap: wrap; /* Responsive layout for smaller screens */
 }
 
-.contact-form,
-.contact-details {
-    width: 48%; /* Initial width */
-    background-color: #fff;
+/* Contact Form Styling */
+.contact-form {
+    width: 48%;
+    background-color: #ffffff; /* White form background */
     padding: 30px;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1); /* Subtle shadow */
     border-radius: 8px;
     border: 1px solid #ddd;
 }
 
-.contact-form h3,
-.contact-details h3 {
+.contact-form h3 {
     font-size: 24px;
     color: #007bff;
     margin-bottom: 20px;
 }
 
-/* Form elements */
-.contact-form form {
-    display: flex;
-    flex-direction: column;
-}
-
+/* Form Elements */
 .contact-form label {
     font-size: 16px;
     color: #333;
     margin-bottom: 8px;
     text-align: left;
+    display: block;
 }
 
 .contact-form input,
 .contact-form textarea {
+    width: 100%;
     padding: 10px;
     font-size: 16px;
     margin-bottom: 15px;
     border: 1px solid #ddd;
     border-radius: 5px;
+    background-color: #f9f9f9; /* Matches section background */
+    color: #333;
+    font-family: 'Source Code Pro', monospace; /* Consistent font */
 }
 
 .contact-form textarea {
     resize: vertical;
-    max-width: 100%;
     min-height: 150px;
 }
 
 .contact-form button {
     background-color: #007bff;
     color: white;
-    padding: 10px 20px;
+    padding: 12px 20px;
     border: none;
     border-radius: 5px;
     cursor: pointer;
     font-size: 16px;
-    transition: background-color 0.3s;
+    font-family: 'Source Code Pro', monospace; /* Stylish button font */
+    transition: background-color 0.3s ease, transform 0.3s ease;
 }
 
 .contact-form button:hover {
-    background-color: #0056b3;
+    background-color: #0056b3; /* Darker blue on hover */
+    transform: scale(1.05); /* Slight grow effect */
 }
 
 /* Contact Details Styling */
+.contact-details {
+    width: 48%;
+    background-color: #ffffff; /* White card background */
+    padding: 30px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1); /* Subtle shadow for details */
+    border-radius: 8px;
+    border: 1px solid #ddd;
+}
+
+.contact-details h3 {
+    font-size: 24px;
+    color: #007bff;
+    margin-bottom: 20px;
+}
+
+/* Contact List Styling */
 .contact-details ul {
     list-style-type: none;
     padding: 0;
@@ -615,48 +627,61 @@ color: #777;
     padding: 12px;
     border-radius: 8px;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    transition: background-color 0.3s, transform 0.3s;
+    transition: background-color 0.3s ease, transform 0.3s ease;
 }
 
 .contact-details li:hover {
     background-color: #007bff;
     color: white;
-    transform: scale(1.05);
+    transform: scale(1.05); /* Interactive hover effect */
 }
 
 .contact-details li i {
     margin-right: 15px;
-    color: #007bff;
+    color: #007bff; /* Highlight icon */
+    font-size: 20px; /* Slightly larger icons */
 }
 
 .contact-details a {
-    color: inherit;
+    color: inherit; /* Inherit color for hover effects */
     text-decoration: none;
+}
+
+/* Avatar Styling */
+.contact-details .avatar {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 15px;
+}
+
+.contact-details .avatar img {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    object-fit: cover;
 }
 
 /* Responsive Styling */
 @media (max-width: 768px) {
     .contact-container {
         flex-direction: column;
-        gap: 20px;
+        gap: 20px; /* Adjust gap for smaller screens */
     }
 
     .contact-form,
     .contact-details {
-        width: 100%; /* Make sections full-width */
-    }
-
-    .sixth-section h2 {
-        font-size: 28px; /* Reduce font size for better mobile readability */
+        width: 100%; /* Full-width for smaller screens */
     }
 
     .contact-form button {
         font-size: 14px;
-        padding: 8px 15px; /* Adjust button size */
+        padding: 10px 15px; /* Smaller buttons */
     }
 
     .contact-details li {
-        font-size: 16px;
+        font-size: 16px; /* Adjust font size for readability */
     }
 }
 
