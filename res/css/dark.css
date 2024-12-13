@@ -438,11 +438,14 @@ body {
 
 .project-card {
     width: 300px;
+    min-width: 300px; /* Prevents shrinking */
+    max-width: 300px; /* Prevents expanding */
     border: 2px solid #007bff;
     border-radius: 10px;
     cursor: pointer;
     transition: transform 0.3s ease-in-out;
     box-shadow: 0 4px 8px rgba(255, 255, 255, 0.1); /* Light shadow */
+    flex-shrink: 0; /* Prevents shrinking in a flex container */
 }
 
 .project-card:hover {
@@ -491,6 +494,7 @@ body {
 
 .scroll-guide i {
     margin-left: 5px;
+    margin-right: 10px;
 }
 
 /* Modal */
