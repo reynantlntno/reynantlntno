@@ -541,6 +541,64 @@ function renderSkills() {
   });
 }
 
+// Function to fetch messages from MongoDB
+function fetchMessages() {
+  showLoadingModal();
+  fetch('/.netlify/functions/get-messages')
+    .then(response => {
+      if (!response.ok) {
+        throw new Error('Network response was not ok');
+      }
+      return response.json();
+    })
+    .then(data => {
+      messages = data;
+      renderMessages();
+    })
+    .catch(error => {
+      console.error('Error fetching messages:', error);
+      // Handle errors (e.g., show an error message to the user)
+    })
+    .finally(() => {
+      hideLoadingModal();
+    });
+}
+
+// Function to render message list
+function renderMessages() {
+  const messageList = document.querySelector('.message-list');
+  messageList.innerHTML = ''; // Clear the list
+
+  if (messages.length === 0) {
+    const noMessageItem = document.createElement('div');
+    noMessageItem.textContent = "No messages yet.";
+    messageList.appendChild(noMessageItem);
+    return;
+  }
+
+  messages.forEach(message => {
+    const messageItem = document.createElement('div');
+    messageItem.classList.add('message-item');
+    messageItem.innerHTML = `
+      <h4>${message.name}</h4>
+      <p class="email">${message.email}</p>
+      <p>${message.message}</p>
+      <div class="reply-delete-btns">
+        <button onclick="replyToMessage('${message._id}', '${message.email}')">Reply</button>
+        <button onclick="showDeleteModal('${message._id}', 'message')">Delete</button>
+      </div>
+    `;
+    messageList.appendChild(messageItem);
+  });
+}
+
+// Function to reply to a message
+function replyToMessage(messageId, email) {
+  // You can use the email to pre-fill the "To" field of your email client
+  // For example, you can open a new email window with the recipient's email address
+  window.open(`mailto:${email}`);
+}
+
 // Functions to open the forms (with pre-filled data for editing)
 function openForm(formId, item = null) {
   const formContainer = document.getElementById(formId);
@@ -887,6 +945,7 @@ document.getElementById('certification-image').addEventListener('change', (event
 fetchProjects();
 fetchCertifications();
 fetchSkills();
+fetchMessages();
 </script>
 
 </body>

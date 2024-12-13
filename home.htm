@@ -2,15 +2,88 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=0.6">
+    <meta name="viewport" content="width=device-width, initial-scale=0.5">
     <title>reynantlntno.</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&family=Source+Code+Pro:wght@400;600&display=swap" rel="stylesheet">
     <link href="res/css/general.css" rel="stylesheet">
     <link href="res/css/dark.css" rel="stylesheet" id="dark-mode-stylesheet">
+    <style>
+        /* Loading Modal Styles */
+        .loading-modal {
+          display: none; 
+          position: fixed;
+          z-index: 1000; 
+          left: 0;
+          top: 0;
+          width: 100%;
+          height: 100%;
+          overflow: auto; 
+          background-color: rgba(0, 0, 0, 0.4); 
+        }
+    
+        .loading-modal-content {
+          background-color: transparent;
+          color: #ddd;
+          margin: 15% auto; 
+          padding: 20px;
+          border: 2px solid #007bff; /* Add border to match the text color */
+          border-radius: 5px;
+          width: 200px; 
+          text-align: center;
+        }
+
+        #media-view {
+    display: none; /* Hidden by default */
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.8);
+    justify-content: center;
+    align-items: center;
+    z-index: 100; /* Ensure it's on top */
+}
+
+#media-view img {
+    max-width: 90%;
+    max-height: 90%;
+}
+
+#prev-btn, #next-btn {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    background-color: rgba(0, 0, 0, 0.5);
+    color: white;
+    font-size: 24px;
+    padding: 10px 15px;
+    border: none;
+    cursor: pointer;
+}
+
+#prev-btn {
+    left: 20px;
+}
+
+#next-btn {
+    right: 20px;
+}
+
+  </style>
+    
 </head>
 <body>
+    <div class="loading-modal" id="loading-modal">
+        <div class="loading-modal-content">
+          <div class="loader"></div> 
+          <p>Loading...</p>
+        </div>
+      </div>
 
+      
+      
 <div class="first-section" id="home">
     <div class="image-container">
         <img src="res/imgs/reynantlnto_memoji.png" alt="Placeholder Image">
@@ -106,6 +179,12 @@
     </div>
 </div>
 
+<div id="media-view">
+    <button id="prev-btn">&lt;</button>
+    <img id="media-image" src="" alt="Project Screenshot">
+    <button id="next-btn">&gt;</button>
+</div>
+
 <div class="fifth-section" id="skills">
     <h2>Skills & Certifications</h2>
 
@@ -124,48 +203,48 @@
 
 <div class="sixth-section" id="contact">
     <div class="contact-container">
-        <div class="contact-form">
-            <h3>Send a Message</h3>
-            <form action="#" method="POST">
-                <label for="name">Name</label>
-                <input type="text" id="name" name="name" placeholder="Your Name" required>
+      <div class="contact-form">
+        <h3>Send a Message</h3>
+        <form id="contact-form"> 
+          <label for="name">Name</label>
+          <input type="text" id="name" name="name" placeholder="Your Name" required>
 
-                <label for="email">Email</label>
-                <input type="email" id="email" name="email" placeholder="Your Email" required>
+          <label for="email">Email</label>
+          <input type="email" id="email" name="email" placeholder="Your Email" required>
 
-                <label for="message">Message</label>
-                <textarea id="message" name="message" placeholder="Your Message" rows="5" required></textarea>
+          <label for="message">Message</label>
+          <textarea id="message" name="message" placeholder="Your Message" rows="5" required></textarea>
 
-                <button type="submit" class="submit-btn">Send Message</button>
-            </form>
-        </div>
-        <div class="contact-details">
-            <h3>Reach Out</h3>
-            <ul>
-                <li>
-                    <i class="fas fa-user-circle"></i>
-                    <span class="username">Reynan Tolentino</span>
-                </li>
-                <li>
-                    <i class="fas fa-envelope"></i>
-                    <a href="mailto:theblissteam@icloud.com">theblissteam@icloud.com</a>
-                </li>
-                <li>
-                    <i class="fab fa-facebook"></i>
-                    <a href="https://facebook.com/reynantlntno" target="_blank">@reynantlntno</a>
-                </li>
-                <li>
-                    <i class="fab fa-instagram"></i>
-                    <a href="https://instagram.com/reynantlntno" target="_blank">@reynantlntno</a>
-                </li>
-                <li>
-                    <i class="fab fa-github"></i>
-                    <a href="https://github.com/reynantlntno" target="_blank">@reynantlntno</a>
-                </li>
-            </ul>
-        </div>
+          <button type="submit" class="submit-btn">Send Message</button>
+        </form>
+      </div>
+      <div class="contact-details">
+        <h3>Reach Out</h3>
+        <ul>
+          <li>
+            <i class="fas fa-user-circle"></i>
+            <span class="username">Reynan Tolentino</span>
+          </li>
+          <li>
+            <i class="fas fa-envelope"></i>
+            <a href="mailto:theblissteam@icloud.com">theblissteam@icloud.com</a>
+          </li>
+          <li>
+            <i class="fab fa-facebook"></i>
+            <a href="https://facebook.com/reynantlntno" target="_blank">@reynantlntno</a>
+          </li>
+          <li>
+            <i class="fab fa-instagram"></i>
+            <a href="https://instagram.com/reynantlntno" target="_blank">@reynantlntno</a>
+          </li>
+          <li>
+            <i class="fab fa-github"></i>
+            <a href="https://github.com/reynantlntno" target="_blank">@reynantlntno</a>
+          </li>
+        </ul>
+      </div>
     </div>
-</div>
+  </div>
 
 <div class="footer">
     <div class="quick-links">

@@ -496,7 +496,7 @@ flex-wrap: wrap;
 
 .certificate {
 text-align: center;
-width: 200px;
+width: 300px;
 border: 2px solid #007bff;
 border-radius: 10px;
 padding: 20px;
@@ -505,7 +505,7 @@ box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 
 .certificate img {
 width: 100%;
-height: 150px;
+height: 200px;
 object-fit: cover;
 border-radius: 10px;
 margin-bottom: 10px;
@@ -541,7 +541,7 @@ color: #777;
     padding: 30px;
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1); /* Subtle shadow */
     border-radius: 8px;
-    border: 1px solid #ddd;
+    border: 2px solid #ddd;
 }
 
 .contact-form h3 {
@@ -578,10 +578,10 @@ color: #777;
 }
 
 .contact-form button {
-    background-color: #007bff;
-    color: white;
+    background-color: transparent;
+    color: #007bff;
     padding: 12px 20px;
-    border: none;
+    border: 2px solid #007bff; /* Add border to match the text color */
     border-radius: 5px;
     cursor: pointer;
     font-size: 16px;
@@ -590,7 +590,8 @@ color: #777;
 }
 
 .contact-form button:hover {
-    background-color: #0056b3; /* Darker blue on hover */
+    background-color: #007bff; /* Darker blue on hover */
+    color: #f5f5f5;
     transform: scale(1.05); /* Slight grow effect */
 }
 
@@ -601,7 +602,7 @@ color: #777;
     padding: 30px;
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1); /* Subtle shadow for details */
     border-radius: 8px;
-    border: 1px solid #ddd;
+    border: 2px solid #ddd;
 }
 
 .contact-details h3 {
@@ -764,8 +765,7 @@ color: #777;
 }
 
 
-
-/* Navigation button */
+/* Navigation container */
 .nav-container {
     position: fixed;
     bottom: 20px;
@@ -778,6 +778,7 @@ color: #777;
     z-index: 999;
 }
 
+/* Navigation button */
 .nav-btn {
     width: 60px;
     height: 60px;
@@ -796,6 +797,7 @@ color: #777;
     transform: scale(1.1);
 }
 
+/* Navigation links container */
 .nav-links {
     display: flex;
     align-items: center;
@@ -805,22 +807,25 @@ color: #777;
     bottom: 70px;
     left: 50%;
     transform: translateX(-50%);
-    visibility: hidden;
-    opacity: 0;
+    visibility: hidden;  /* Initially hidden */
+    opacity: 0;  /* Initially transparent */
     transition: opacity 0.3s ease-in-out, visibility 0.3s ease-in-out;
 }
 
+/* Show nav links when .open class is added */
 .nav-container.open .nav-links {
     visibility: visible;
     opacity: 1;
 }
 
+/* Resize nav button when container is open */
 .nav-container.open .nav-btn {
     width: 200px;
     height: 50px;
     border-radius: 25px;
 }
 
+/* Individual nav links styling */
 .nav-link {
     padding: 10px 20px;
     color: #007bff;
@@ -828,6 +833,7 @@ color: #777;
     font-size: 16px;
     margin: 0 10px;
     border-radius: 25px;
+    text-align: center; /* Center the text within the link */
     transition: background-color 0.3s;
 }
 
@@ -835,8 +841,33 @@ color: #777;
     background-color: #e0e0e0;
 }
 
-.nav-container:hover .nav-links {
-    visibility: visible;
-    opacity: 1;
+/* Media query for screens smaller than 768px (mobile/tablet) */
+@media (max-width: 768px) {
+    .nav-links {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr); /* 3 links per row */
+        gap: 10px;
+        margin-top: 20px;
+        width: 100%; /* Ensure full width */
+        bottom: 90px; /* Adjust position */
+        left: 0;
+        transform: translateX(0); /* Reset translate */
+    }
+
+    .nav-link {
+        padding: 8px 16px;
+        font-size: 14px;
+    }
 }
 
+/* Media query for screens smaller than 480px (small mobile) */
+@media (max-width: 480px) {
+    .nav-links {
+        grid-template-columns: repeat(2, 1fr); /* 2 links per row on very small screens */
+    }
+
+    .nav-link {
+        font-size: 12px;
+        padding: 6px 12px;
+    }
+}

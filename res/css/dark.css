@@ -299,7 +299,7 @@ body {
     margin-left: 5px;
 }
 
-/* Navigation Button */
+/* Navigation container */
 .nav-container {
     position: fixed;
     bottom: 20px;
@@ -309,25 +309,29 @@ body {
     display: flex;
     flex-direction: column;
     align-items: center;
+    z-index: 999;
 }
 
+/* Navigation button */
 .nav-btn {
     width: 60px;
     height: 60px;
     border-radius: 50%;
-    background-color: #1e88e5;
+    background-color: #007bff;
     display: flex;
     justify-content: center;
     align-items: center;
     color: white;
     font-size: 24px;
     cursor: pointer;
+    transition: all 0.3s ease-in-out;
 }
 
 .nav-btn:hover {
     transform: scale(1.1);
 }
 
+/* Navigation links container */
 .nav-links {
     display: flex;
     align-items: center;
@@ -337,23 +341,33 @@ body {
     bottom: 70px;
     left: 50%;
     transform: translateX(-50%);
-    visibility: hidden;
-    opacity: 0;
+    visibility: hidden;  /* Initially hidden */
+    opacity: 0;  /* Initially transparent */
     transition: opacity 0.3s ease-in-out, visibility 0.3s ease-in-out;
 }
 
+/* Show nav links when .open class is added */
 .nav-container.open .nav-links {
     visibility: visible;
     opacity: 1;
 }
 
+/* Resize nav button when container is open */
+.nav-container.open .nav-btn {
+    width: 200px;
+    height: 50px;
+    border-radius: 25px;
+}
+
+/* Individual nav links styling */
 .nav-link {
     padding: 10px 20px;
-    color: #1e88e5;
+    color: #007bff;
     text-decoration: none;
     font-size: 16px;
     margin: 0 10px;
     border-radius: 25px;
+    text-align: center; /* Center the text within the link */
     transition: background-color 0.3s;
 }
 
@@ -361,9 +375,35 @@ body {
     background-color: #333;
 }
 
-.nav-container:hover .nav-links {
-    visibility: visible;
-    opacity: 1;
+/* Media query for screens smaller than 768px (mobile/tablet) */
+@media (max-width: 768px) {
+    .nav-links {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr); /* 3 links per row */
+        gap: 10px;
+        margin-top: 20px;
+        width: 100%; /* Ensure full width */
+        bottom: 90px; /* Adjust position */
+        left: 0;
+        transform: translateX(0); /* Reset translate */
+    }
+
+    .nav-link {
+        padding: 8px 16px;
+        font-size: 14px;
+    }
+}
+
+/* Media query for screens smaller than 480px (small mobile) */
+@media (max-width: 480px) {
+    .nav-links {
+        grid-template-columns: repeat(2, 1fr); /* 2 links per row on very small screens */
+    }
+
+    .nav-link {
+        font-size: 12px;
+        padding: 6px 12px;
+    }
 }
 
 /* Fourth Section */
@@ -664,7 +704,7 @@ body {
 /* Form Elements */
 .contact-form label {
     font-size: 16px;
-    color: white;
+    color: #ddd;
     margin-bottom: 8px;
     text-align: left;
     display: block;
@@ -678,8 +718,8 @@ body {
     margin-bottom: 15px;
     border: 1px solid #ddd;
     border-radius: 5px;
-    background-color: #333; /* Matches section background */
-    color: white;
+    background-color: transparent; /* Matches section background */
+    color: #ddd;
     font-family: 'Source Code Pro', monospace; /* Consistent font */
 }
 
@@ -690,9 +730,9 @@ body {
 
 .contact-form button {
     background-color: transparent;
-    color: white;
+    color: #007bff;
     padding: 12px 20px;
-    border: 2px solid #007bff;
+    border: 2px solid #007bff; /* Add border to match the text color */
     border-radius: 5px;
     cursor: pointer;
     font-size: 16px;
@@ -702,13 +742,14 @@ body {
 
 .contact-form button:hover {
     background-color: #007bff; /* Darker blue on hover */
+    color: #f5f5f5;
     transform: scale(1.05); /* Slight grow effect */
 }
 
 /* Contact Details Styling */
 .contact-details {
     width: 48%;
-    background-color: #333; /* White form background */
+    background-color: #333; /* White card background */
     padding: 30px;
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1); /* Subtle shadow for details */
     border-radius: 8px;
@@ -730,11 +771,11 @@ body {
 
 .contact-details li {
     font-size: 18px;
-    color: white;
+    color: #ddd;
     margin-bottom: 15px;
     display: flex;
     align-items: center;
-    background-color: #333;
+    background-color: transparent;
     padding: 12px;
     border-radius: 8px;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
@@ -749,7 +790,7 @@ body {
 
 .contact-details li i {
     margin-right: 15px;
-    color: white; /* Highlight icon */
+    color: #ddd; /* Highlight icon */
     font-size: 20px; /* Slightly larger icons */
 }
 

@@ -7,18 +7,6 @@ navBtn.addEventListener('click', () => {
     navContainer.classList.toggle('open');
 });
 
-// Keep the navigation open if hovering over the nav links
-navContainer.addEventListener('mouseenter', () => {
-    if (!navContainer.classList.contains('open')) {
-        navContainer.classList.add('open');
-    }
-});
-
-navContainer.addEventListener('mouseleave', () => {
-    if (!navLinks.matches(':hover')) {
-        navContainer.classList.remove('open');
-    }
-});
 
 // Handle image animation and text reveal
 const imageContainer = document.querySelector('.image-container');
@@ -30,6 +18,63 @@ imageContainer.addEventListener('animationend', () => {
     textContainer.style.display = 'block';
     textElement.classList.add('typing');
 });
+
+// Function to show the loading modal
+function showLoadingModal() {
+    document.getElementById('loading-modal').style.display = 'block';
+  }
+  
+  // Function to hide the loading modal
+  function hideLoadingModal() {
+    document.getElementById('loading-modal').style.display = 'none';
+  }
+
+
+  // Hide loading modal after all fetches are complete
+Promise.all([
+    fetch('/.netlify/functions/get-skills').then(res => res.json()),
+    fetch('/.netlify/functions/get-projects').then(res => res.json()),
+    fetch('/.netlify/functions/get-certifications').then(res => res.json())
+  ])
+  .then(() => {
+    hideLoadingModal();
+  })
+  .catch(error => {
+    console.error('Error fetching data:', error);
+    hideLoadingModal(); // Hide the modal even if there's an error
+  });
+  
+  // Handle contact form submission
+  const contactForm = document.getElementById('contact-form'); 
+  contactForm.addEventListener('submit', (event) => {
+    event.preventDefault(); // Prevent default form submission
+  
+    const name = document.getElementById('name').value;
+    const email = document.getElementById('email').value;
+    const message = document.getElementById('message').value;
+  
+    // Show loading modal while submitting the message
+    showLoadingModal();
+  
+    fetch('/.netlify/functions/add-message', { 
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ name, email, message })
+    })
+    .then(res => res.json())
+    .then(data => {
+      hideLoadingModal();
+      alert('Message sent successfully!'); 
+      contactForm.reset(); 
+    })
+    .catch(error => {
+      hideLoadingModal();
+      console.error('Error sending message:', error);
+      alert('Error sending message. Please try again later.'); 
+    });
+  });
 
 // Fetch skills from the API
 fetch('/.netlify/functions/get-skills')
@@ -54,6 +99,11 @@ fetch('/.netlify/functions/get-projects')
         carouselContainer.innerHTML = ""; // Clear existing projects
 
         projects.forEach((project, index) => {
+            // Shorten the description if it's too long
+            const shortDescription = project.description.length > 100
+                ? project.description.substring(0, 100) + "..."
+                : project.description;
+        
             const projectCard = `
                 <div class="project-card" onclick="openModal(${index})">
                     <div class="card-header">
@@ -61,7 +111,7 @@ fetch('/.netlify/functions/get-projects')
                     </div>
                     <div class="card-body">
                         <h3 class="project-title">${project.name}</h3>
-                        <p class="project-description">${project.description}</p>
+                        <p class="project-description">${shortDescription}</p> 
                     </div>
                 </div>
             `;
@@ -88,10 +138,12 @@ function openModal(index) {
 
             const screenshotsContainer = document.getElementById('modal-screenshots');
             screenshotsContainer.innerHTML = "";
-            project.screenshots.forEach(img => {
+
+            project.screenshots.forEach((img, i) => {
                 const imgElement = document.createElement('img');
                 imgElement.src = img;
-                imgElement.alt = project.name + ' screenshot'; // Add alt text for accessibility
+                imgElement.alt = project.name + ' screenshot ' + (i + 1);
+                imgElement.onclick = () => openMediaView(project.screenshots, i); // Add click handler for media view
                 screenshotsContainer.appendChild(imgElement);
             });
 
@@ -103,6 +155,35 @@ function openModal(index) {
 // Close modal
 function closeModal() {
     document.getElementById('modal').style.display = "none";
+}
+
+// Function to open the media view
+function openMediaView(images, startIndex) {
+    const mediaView = document.getElementById('media-view');
+    const mediaImage = document.getElementById('media-image');
+    let currentIndex = startIndex;
+
+    mediaImage.src = images[currentIndex];
+    mediaView.style.display = "flex";
+
+    // Event delegation for better performance and handling dynamically added elements
+    mediaView.addEventListener('click', (event) => {
+        if (event.target.id === 'prev-btn') {
+            currentIndex = (currentIndex - 1 + images.length) % images.length;
+            mediaImage.src = images[currentIndex];
+        } else if (event.target.id === 'next-btn') {
+            currentIndex = (currentIndex + 1) % images.length;
+            mediaImage.src = images[currentIndex];
+        } else if (event.target !== mediaImage) { 
+            // Close if clicked outside the image, but not on the buttons
+            closeMediaView();
+        }
+    });
+
+    // Close media view
+    function closeMediaView() {
+        mediaView.style.display = "none";
+    }
 }
 
 // Close modal when clicking outside the modal content
