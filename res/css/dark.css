@@ -437,9 +437,9 @@ body {
 }
 
 .project-card {
-    width: 300px;
-    min-width: 300px; /* Prevents shrinking */
-    max-width: 300px; /* Prevents expanding */
+    width: 400px;
+    min-width: 400px; /* Prevents the width from going below 400px */
+    max-width: 400px; /* Prevents the width from going above 400px */
     border: 2px solid #007bff;
     border-radius: 10px;
     cursor: pointer;
