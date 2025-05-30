@@ -1,0 +1,9 @@
+User-agent: *
+Allow: /
+
+# Disallow form submission paths
+Disallow: /api/
+Disallow: /.netlify/
+
+# Sitemap
+Sitemap: https://reynantlntno.netlify.app/sitemap.xml

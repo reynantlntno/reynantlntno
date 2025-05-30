@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Page Not Found | Reynan Tolentino</title>
+  <script>
+    // Single Page App redirect for Netlify
+    // Redirect all 404 errors to index.html to let Vue Router handle it
+    sessionStorage.redirect = location.href;
+  </script>
+  <meta http-equiv="refresh" content="0;URL='/'">
+</head>
+<body>
+  <p>Redirecting to home page...</p>
+</body>
+</html>
