@@ -1,4 +1,4 @@
-const axios = require('axios');
+import axios from 'axios';
 
 // Create an axios instance for external API calls
 const createApiClient = () => {
@@ -16,8 +16,8 @@ const createApiClient = () => {
   });
 };
 
-// Main function handler
-exports.handler = async function(event, context) {
+// Main function handler - using ES module export
+export const handler = async function(event, context) {
   // Set CORS headers
   const headers = {
     'Access-Control-Allow-Origin': process.env.NODE_ENV === 'development' 
