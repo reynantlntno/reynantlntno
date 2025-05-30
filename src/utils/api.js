@@ -1,17 +1,17 @@
 import axios from 'axios';
 
-// Define API URL based on environment
+// Always use Netlify Functions in production, proxy in development
 const API_BASE_URL = 
   import.meta.env.MODE === 'development'
     ? '/api' // This will be proxied in development
-    : 'https://mabinianelamp.net/api';
+    : '/.netlify/functions'; // Use Netlify Functions in production
 
 const instance = axios.create({
   baseURL: API_BASE_URL,
   timeout: 15000,
   headers: {
-    'Content-Type': 'application/json',
-    'X-API-KEY': import.meta.env.API_KEY
+    'Content-Type': 'application/json'
+    // Remove the X-API-KEY header as it's handled by Netlify Functions
   }
 });
 
@@ -55,7 +55,7 @@ export default {
   },
 
   async getServices() {
-    return instance.get('/services');
+    return instance.get('/appointments?type=services');
   },
 
   async scheduleAppointment(appointmentData) {
@@ -71,14 +71,14 @@ export default {
     return instance.get(`/blog/${slug}`);
   },
   
-  // Projects
+  // Projects - These need to be implemented in Netlify Functions
   async getProjects(category = '') {
     const params = category ? `?category=${category}` : '';
     return instance.get(`/projects${params}`);
   },
   
   async getFeaturedProjects(limit = 3) {
-    return instance.get(`/projects/featured?limit=${limit}`);
+    return instance.get(`/projects?featured=true&limit=${limit}`);
   },
   
   async getProjectBySlug(slug) {
