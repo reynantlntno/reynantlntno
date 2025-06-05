@@ -1,0 +1,252 @@
+@import 'tailwindcss/base';
+@import 'tailwindcss/components';
+@import 'tailwindcss/utilities';
+
+/* Base styles */
+@layer base {
+  html {
+    font-family: 'Inter', sans-serif;
+  }
+  
+  code, pre, .font-mono {
+    font-family: 'JetBrains Mono', monospace;
+  }
+
+  body {
+    @apply transition-colors duration-300;
+  }
+
+  /* Dark mode base */
+  .dark body {
+    @apply bg-custom-slate-800 text-gray-100;
+  }
+
+  /* Light mode base */
+  body {
+    @apply bg-gray-50 text-gray-900;
+  }
+}
+
+/* Component styles */
+@layer components {
+  /* Glass morphism effect */
+  .glass {
+    @apply backdrop-blur-md bg-white/10 dark:bg-white/5 border border-white/20 dark:border-white/10;
+  }
+
+  .glass-strong {
+    @apply backdrop-blur-lg bg-white/20 dark:bg-white/10 border border-white/30 dark:border-white/20;
+  }
+
+  /* Gradient backgrounds */
+  .gradient-navy-slate {
+    @apply bg-gradient-to-br from-custom-blue-900 via-custom-slate-800 to-custom-zinc-700;
+  }
+
+  .gradient-steel {
+    @apply bg-gradient-to-br from-custom-zinc-800 via-gray-700 to-custom-slate-600;
+  }
+
+  .gradient-cobalt {
+    @apply bg-gradient-to-br from-custom-blue-800 via-custom-blue-900 to-custom-slate-700;
+  }
+
+  .gradient-obsidian {
+    @apply bg-gradient-to-br from-gray-800 via-custom-zinc-700 to-custom-slate-700;
+  }
+
+  /* Interactive elements */
+  .btn-primary {
+    @apply px-6 py-3 bg-custom-blue-800 hover:bg-custom-blue-900 text-white font-medium rounded-lg transition-all duration-200 hover:shadow-lg hover:scale-105 focus:outline-none focus:ring-2 focus:ring-custom-blue-800 focus:ring-opacity-50;
+  }
+
+  .btn-secondary {
+    @apply px-6 py-3 bg-transparent border-2 border-custom-blue-800 text-custom-blue-800 dark:text-custom-blue-400 hover:bg-custom-blue-800 hover:text-white font-medium rounded-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-custom-blue-800 focus:ring-opacity-50;
+  }
+
+  .btn-ghost {
+    @apply px-4 py-2 text-gray-600 dark:text-gray-300 hover:text-custom-blue-800 dark:hover:text-custom-blue-400 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-all duration-200;
+  }
+
+  /* Input styles */
+  .input-field {
+    @apply w-full px-4 py-2.5 border border-gray-300 dark:border-custom-slate-600 rounded-lg bg-white dark:bg-custom-slate-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-custom-blue-800 focus:border-transparent transition-all duration-200;
+  }
+
+  .textarea-field {
+    @apply w-full px-4 py-2.5 border border-gray-300 dark:border-custom-slate-600 rounded-lg bg-white dark:bg-custom-slate-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-custom-blue-800 focus:border-transparent transition-all duration-200 resize-y min-h-[120px];
+  }
+
+  /* Card styles */
+  .card {
+    @apply bg-white dark:bg-custom-slate-800 rounded-xl shadow-sm border border-gray-200 dark:border-custom-slate-700 transition-all duration-200;
+  }
+
+  .card-interactive {
+    @apply card hover:shadow-lg hover:scale-[1.02] cursor-pointer;
+  }
+
+  /* Loading animation */
+  .loading-pulse {
+    @apply animate-pulse bg-gray-300 dark:bg-gray-600 rounded;
+  }
+
+  /* Text styles */
+  .text-gradient {
+    @apply bg-gradient-to-r from-custom-blue-400 to-custom-blue-600 bg-clip-text text-transparent;
+  }
+
+  /* Code block styles */
+  .code-block {
+    @apply bg-gray-900 dark:bg-gray-950 text-gray-100 p-4 rounded-lg overflow-x-auto text-sm font-mono;
+  }
+
+  /* Navigation styles */
+  .nav-link {
+    @apply text-gray-600 dark:text-gray-300 hover:text-custom-blue-800 dark:hover:text-custom-blue-400 px-3 py-2 rounded-lg font-medium transition-all duration-200;
+  }
+
+  .nav-link-active {
+    @apply text-custom-blue-800 dark:text-custom-blue-400 bg-custom-blue-50 dark:bg-custom-blue-900/20;
+  }
+
+  /* Hero section specific styles */
+  .hero-section {
+    @apply min-h-screen flex items-center justify-center relative overflow-hidden;
+  }
+
+  .hero-content {
+    @apply relative z-10;
+  }
+
+  .hero-subtext {
+    @apply font-mono text-sm tracking-wider uppercase;
+  }
+}
+
+/* Utility classes */
+@layer utilities {
+  .animation-delay-200 {
+    animation-delay: 200ms;
+  }
+  
+  .animation-delay-400 {
+    animation-delay: 400ms;
+  }
+  
+  .animation-delay-600 {
+    animation-delay: 600ms;
+  }
+
+  /* Scrollbar styling */
+  .scrollbar-thin {
+    scrollbar-width: thin;
+    scrollbar-color: rgb(156 163 175) transparent;
+  }
+
+  .scrollbar-thin::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+
+  .scrollbar-thin::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  .scrollbar-thin::-webkit-scrollbar-thumb {
+    background-color: rgb(156 163 175);
+    border-radius: 3px;
+  }
+
+  .scrollbar-thin::-webkit-scrollbar-thumb:hover {
+    background-color: rgb(107 114 128);
+  }
+
+  /* Full viewport height */
+  .min-h-screen-safe {
+    min-height: 100vh;
+    min-height: 100dvh;
+  }
+
+  .h-screen-safe {
+    height: 100vh;
+    height: 100dvh;
+  }
+}
+
+/* Custom animations */
+@keyframes shimmer {
+  0% {
+    background-position: -200px 0;
+  }
+  100% {
+    background-position: calc(200px + 100%) 0;
+  }
+}
+
+.shimmer {
+  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+  background-size: 200px 100%;
+  animation: shimmer 1.5s infinite;
+}
+
+.dark .shimmer {
+  background: linear-gradient(90deg, #374151 25%, #4b5563 50%, #374151 75%);
+  background-size: 200px 100%;
+}
+
+/* Particle animation styles */
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+.animate-float {
+  animation: float 6s ease-in-out infinite;
+}
+
+/* Enhanced hero animations */
+@keyframes hero-fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-hero-fade-in {
+  animation: hero-fade-in 1s ease-out forwards;
+}
+
+/* Typing animation for hero text */
+@keyframes typing {
+  from {
+    width: 0;
+  }
+  to {
+    width: 100%;
+  }
+}
+
+@keyframes blink-caret {
+  from, to {
+    border-color: transparent;
+  }
+  50% {
+    border-color: currentColor;
+  }
+}
+
+.typing-animation {
+  overflow: hidden;
+  border-right: 3px solid;
+  white-space: nowrap;
+  animation: typing 3.5s steps(40, end), blink-caret 0.75s step-end infinite;
+}

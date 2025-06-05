@@ -1,0 +1,24 @@
+/* TEAM */
+Developer: Reynan Tolentino
+Contact: hello@reynantlntno.dev
+GitHub: https://github.com/reynantlntno
+LinkedIn: https://www.linkedin.com/in/reynan-fuertez/
+Location: Philippines
+
+/* THANKS */
+Nuxt.js: https://nuxt.com
+Tailwind CSS: https://tailwindcss.com
+Netlify: https://netlify.com
+Hostinger: https://hostinger.com
+
+/* SITE */
+Last update: 2024/01/01
+Language: English
+Doctype: HTML5
+IDE: Visual Studio Code
+Standards: HTML5, CSS3, JavaScript ES6+, TypeScript
+Components: Vue 3, Nuxt 3, Pinia
+Frameworks: Tailwind CSS, MySQL
+Hosting: Netlify
+Backend: Netlify Functions
+Database: MySQL (Hostinger)

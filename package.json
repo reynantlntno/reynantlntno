@@ -1,0 +1,36 @@
+{
+  "name": "reynantlntno.dev",
+  "version": "1.0.0",
+  "description": "Reynan Tolentino's Software Development Portfolio",
+  "author": "Reynan Tolentino <hello@reynantlntno.dev>",
+  "license": "MIT",
+  "scripts": {
+    "build": "nuxt build",
+    "dev": "nuxt dev",
+    "generate": "nuxt generate",
+    "preview": "nuxt preview",
+    "postinstall": "nuxt prepare",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix"
+  },
+  "devDependencies": {
+    "@nuxt/devtools": "latest",
+    "@nuxtjs/tailwindcss": "^6.8.4",
+    "@types/node": "^20.8.0",
+    "netlify-cli": "^21.6.0",
+    "nuxt": "^3.8.0",
+    "typescript": "^5.2.2"
+  },
+  "dependencies": {
+    "@headlessui/vue": "^1.7.16",
+    "@heroicons/vue": "^2.2.0",
+    "@nuxtjs/color-mode": "^3.3.0",
+    "@pinia/nuxt": "^0.5.1",
+    "jsonwebtoken": "^9.0.2",
+    "marked": "^9.1.2",
+    "mysql2": "^3.14.1",
+    "nodemailer": "^7.0.3",
+    "pinia": "^2.1.7",
+    "vue-toastification": "^2.0.0-rc.5"
+  }
+}
