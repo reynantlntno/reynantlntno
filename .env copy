@@ -1,0 +1,26 @@
+# Database Configuration
+DB_HOST=srv1835.hstgr.io
+DB_NAME=u725458043_rtlntnodev
+DB_USER=u725458043_ryntlntno
+DB_PASSWORD=zorby5-jokfod-cygfaW
+DB_PORT=3306
+
+# Email Configuration
+SMTP_HOST=smtp.gmail.com
+SMTP_PORT=465
+SMTP_USER=ilssystems8@gmail.com
+SMTP_PASS=ajotuarmhzihbzxr
+FROM_EMAIL=hello@reynantlntno.dev
+FROM_NAME=Reynan Tolentino
+
+# Site Configuration
+SITE_URL=https://reynantlntno.netlify.app
+SITE_NAME=reynantlntno.dev
+
+# API Security
+JWT_SECRET=D8f2vX9Tq3nW1LbJz5pQkE6gH7MrY7Cp
+API_RATE_LIMIT=100
+MASTER_API_KEY=mst_k3y_9X2vL8qN4bP7dR5jT6hW1zE3yU8
+
+# Development
+NODE_ENV=development
