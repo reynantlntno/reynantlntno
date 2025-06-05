@@ -1,0 +1,528 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Panel - Reynan Tolentino</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        [x-cloak] { display: none !important; }
+        .sidebar-transition { transition: transform 0.3s ease-in-out; }
+    </style>
+</head>
+<body class="bg-gray-100" x-data="adminApp()" x-init="init()">
+    <!-- Login Modal -->
+    <div x-show="!isAuthenticated" x-cloak class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+        <div class="bg-white p-8 rounded-lg shadow-lg w-96">
+            <h2 class="text-2xl font-bold mb-4 text-center">Admin Login</h2>
+            <form @submit.prevent="login()">
+                <div class="mb-4">
+                    <label class="block text-gray-700 text-sm font-bold mb-2">Master API Key</label>
+                    <input 
+                        type="password" 
+                        x-model="apiKey" 
+                        class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:border-blue-500"
+                        placeholder="Enter master API key"
+                        required
+                    >
+                </div>
+                <button 
+                    type="submit" 
+                    class="w-full bg-blue-500 text-white py-2 rounded-lg hover:bg-blue-600 transition-colors"
+                    :disabled="loading"
+                >
+                    <span x-show="!loading">Login</span>
+                    <span x-show="loading">Logging in...</span>
+                </button>
+            </form>
+            <div x-show="error" x-text="error" class="text-red-500 text-sm mt-2"></div>
+        </div>
+    </div>
+
+    <!-- Main App -->
+    <div x-show="isAuthenticated" x-cloak class="min-h-screen">
+        <!-- Sidebar -->
+        <div class="fixed inset-y-0 left-0 w-64 bg-gray-800 text-white sidebar-transition z-40" 
+             :class="sidebarOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'">
+            <div class="p-4">
+                <h1 class="text-xl font-bold">Admin Panel</h1>
+            </div>
+            <nav class="mt-8">
+                <template x-for="item in menuItems">
+                    <a 
+                        href="#" 
+                        @click="currentSection = item.id" 
+                        class="flex items-center px-4 py-3 hover:bg-gray-700 transition-colors"
+                        :class="currentSection === item.id ? 'bg-gray-700 border-r-4 border-blue-500' : ''"
+                    >
+                        <i :class="item.icon" class="mr-3"></i>
+                        <span x-text="item.name"></span>
+                    </a>
+                </template>
+            </nav>
+            <div class="absolute bottom-4 left-4">
+                <button @click="logout()" class="text-red-400 hover:text-red-300">
+                    <i class="fas fa-sign-out-alt mr-2"></i>Logout
+                </button>
+            </div>
+        </div>
+
+        <!-- Mobile menu button -->
+        <div class="md:hidden fixed top-4 left-4 z-50">
+            <button @click="sidebarOpen = !sidebarOpen" class="bg-gray-800 text-white p-2 rounded">
+                <i class="fas fa-bars"></i>
+            </button>
+        </div>
+
+        <!-- Main Content -->
+        <div class="md:ml-64 min-h-screen">
+            <!-- Header -->
+            <header class="bg-white shadow-sm border-b px-6 py-4">
+                <div class="flex justify-between items-center">
+                    <h2 class="text-2xl font-bold text-gray-800" x-text="getCurrentSectionName()"></h2>
+                    <div class="text-sm text-gray-600">
+                        Last updated: <span x-text="new Date().toLocaleString()"></span>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Content Area -->
+            <main class="p-6">
+                <!-- Dashboard -->
+                <div x-show="currentSection === 'dashboard'" x-cloak>
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+                        <template x-for="stat in stats">
+                            <div class="bg-white p-6 rounded-lg shadow">
+                                <div class="flex items-center">
+                                    <div class="flex-1">
+                                        <p class="text-sm text-gray-600" x-text="stat.label"></p>
+                                        <p class="text-2xl font-bold" x-text="stat.value"></p>
+                                    </div>
+                                    <div class="text-3xl" x-text="stat.icon"></div>
+                                </div>
+                            </div>
+                        </template>
+                    </div>
+                    
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                        <!-- Recent Activity -->
+                        <div class="bg-white p-6 rounded-lg shadow">
+                            <h3 class="text-lg font-semibold mb-4">Recent Activity</h3>
+                            <div class="space-y-3">
+                                <template x-for="activity in recentActivity">
+                                    <div class="flex items-center p-3 bg-gray-50 rounded">
+                                        <div class="flex-1">
+                                            <p class="text-sm" x-text="activity.message"></p>
+                                            <p class="text-xs text-gray-500" x-text="activity.time"></p>
+                                        </div>
+                                    </div>
+                                </template>
+                            </div>
+                        </div>
+
+                        <!-- Quick Actions -->
+                        <div class="bg-white p-6 rounded-lg shadow">
+                            <h3 class="text-lg font-semibold mb-4">Quick Actions</h3>
+                            <div class="space-y-2">
+                                <button @click="currentSection = 'blog'; showCreateModal('blog')" 
+                                        class="w-full text-left px-4 py-2 bg-blue-50 hover:bg-blue-100 rounded">
+                                    <i class="fas fa-plus mr-2"></i>Create New Blog Post
+                                </button>
+                                <button @click="currentSection = 'projects'; showCreateModal('projects')" 
+                                        class="w-full text-left px-4 py-2 bg-green-50 hover:bg-green-100 rounded">
+                                    <i class="fas fa-plus mr-2"></i>Add New Project
+                                </button>
+                                <button @click="currentSection = 'appointments'" 
+                                        class="w-full text-left px-4 py-2 bg-purple-50 hover:bg-purple-100 rounded">
+                                    <i class="fas fa-calendar mr-2"></i>Manage Appointments
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Blog Section -->
+                <div x-show="currentSection === 'blog'" x-cloak>
+                    <div class="flex justify-between items-center mb-6">
+                        <h3 class="text-xl font-semibold">Blog Posts</h3>
+                        <button @click="showCreateModal('blog')" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">
+                            <i class="fas fa-plus mr-2"></i>New Post
+                        </button>
+                    </div>
+
+                    <!-- Blog Filters -->
+                    <div class="bg-white p-4 rounded-lg shadow mb-6">
+                        <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                            <input type="text" x-model="blogFilters.search" @input="loadBlogPosts()" 
+                                   placeholder="Search posts..." class="border rounded px-3 py-2">
+                            <select x-model="blogFilters.published" @change="loadBlogPosts()" class="border rounded px-3 py-2">
+                                <option value="">All Posts</option>
+                                <option value="true">Published</option>
+                                <option value="false">Draft</option>
+                            </select>
+                            <select x-model="blogFilters.sortBy" @change="loadBlogPosts()" class="border rounded px-3 py-2">
+                                <option value="published_at">Published Date</option>
+                                <option value="created_at">Created Date</option>
+                                <option value="title">Title</option>
+                            </select>
+                            <select x-model="blogFilters.sortOrder" @change="loadBlogPosts()" class="border rounded px-3 py-2">
+                                <option value="desc">Newest First</option>
+                                <option value="asc">Oldest First</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Blog Posts Table -->
+                    <div class="bg-white rounded-lg shadow overflow-hidden">
+                        <table class="w-full">
+                            <thead class="bg-gray-50">
+                                <tr>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Title</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Status</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Published</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-gray-200">
+                                <template x-for="post in blogPosts" :key="post.id">
+                                    <tr>
+                                        <td class="px-6 py-4">
+                                            <div>
+                                                <div class="text-sm font-medium text-gray-900" x-text="post.title"></div>
+                                                <div class="text-sm text-gray-500" x-text="post.slug"></div>
+                                            </div>
+                                        </td>
+                                        <td class="px-6 py-4">
+                                            <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full"
+                                                  :class="post.published ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'"
+                                                  x-text="post.published ? 'Published' : 'Draft'">
+                                            </span>
+                                        </td>
+                                        <td class="px-6 py-4 text-sm text-gray-500" x-text="formatDate(post.published_at)"></td>
+                                        <td class="px-6 py-4 text-sm">
+                                            <button @click="editItem('blog', post)" class="text-blue-600 hover:text-blue-900 mr-3">
+                                                <i class="fas fa-edit"></i>
+                                            </button>
+                                            <button @click="deleteItem('blog', post.slug, post.title)" class="text-red-600 hover:text-red-900">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                        </td>
+                                    </tr>
+                                </template>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- Pagination -->
+                    <div x-show="blogPagination.totalPages > 1" class="mt-6 flex justify-center">
+                        <nav class="flex space-x-1">
+                            <button @click="changePage('blog', blogPagination.page - 1)" 
+                                    :disabled="!blogPagination.hasPrev"
+                                    class="px-3 py-1 border rounded disabled:opacity-50">Previous</button>
+                            <template x-for="page in getPaginationPages(blogPagination)">
+                                <button @click="changePage('blog', page)" 
+                                        :class="page === blogPagination.page ? 'bg-blue-500 text-white' : 'bg-white'"
+                                        class="px-3 py-1 border rounded" x-text="page"></button>
+                            </template>
+                            <button @click="changePage('blog', blogPagination.page + 1)" 
+                                    :disabled="!blogPagination.hasNext"
+                                    class="px-3 py-1 border rounded disabled:opacity-50">Next</button>
+                        </nav>
+                    </div>
+                </div>
+
+                <!-- Projects Section -->
+                <div x-show="currentSection === 'projects'" x-cloak>
+                    <div class="flex justify-between items-center mb-6">
+                        <h3 class="text-xl font-semibold">Projects</h3>
+                        <button @click="showCreateModal('projects')" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">
+                            <i class="fas fa-plus mr-2"></i>New Project
+                        </button>
+                    </div>
+
+                    <!-- Projects Grid -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                        <template x-for="project in projects" :key="project.id">
+                            <div class="bg-white rounded-lg shadow overflow-hidden">
+                                <div x-show="project.thumbnail_url" class="h-48 bg-gray-200">
+                                    <img :src="project.thumbnail_url" :alt="project.title" class="w-full h-full object-cover">
+                                </div>
+                                <div class="p-4">
+                                    <div class="flex justify-between items-start mb-2">
+                                        <h4 class="text-lg font-semibold" x-text="project.title"></h4>
+                                        <span x-show="project.featured" class="bg-yellow-100 text-yellow-800 text-xs px-2 py-1 rounded">Featured</span>
+                                    </div>
+                                    <p class="text-gray-600 text-sm mb-3" x-text="project.description"></p>
+                                    <div class="flex flex-wrap gap-1 mb-3">
+                                        <template x-for="tech in project.technologies">
+                                            <span class="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded" x-text="tech"></span>
+                                        </template>
+                                    </div>
+                                    <div class="flex justify-between items-center">
+                                        <div class="flex space-x-2">
+                                            <a x-show="project.github_url" :href="project.github_url" target="_blank" 
+                                               class="text-gray-600 hover:text-gray-800">
+                                                <i class="fab fa-github"></i>
+                                            </a>
+                                            <a x-show="project.demo_url" :href="project.demo_url" target="_blank" 
+                                               class="text-gray-600 hover:text-gray-800">
+                                                <i class="fas fa-external-link-alt"></i>
+                                            </a>
+                                        </div>
+                                        <div class="flex space-x-2">
+                                            <button @click="editItem('projects', project)" class="text-blue-600 hover:text-blue-900">
+                                                <i class="fas fa-edit"></i>
+                                            </button>
+                                            <button @click="deleteItem('projects', project.slug, project.title)" class="text-red-600 hover:text-red-900">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </template>
+                    </div>
+                </div>
+
+                <!-- Contact Messages Section -->
+                <div x-show="currentSection === 'contact'" x-cloak>
+                    <div class="flex justify-between items-center mb-6">
+                        <h3 class="text-xl font-semibold">Contact Messages</h3>
+                        <div class="flex space-x-2">
+                            <select x-model="contactFilters.read" @change="loadContactMessages()" class="border rounded px-3 py-2">
+                                <option value="">All Messages</option>
+                                <option value="false">Unread</option>
+                                <option value="true">Read</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Messages Table -->
+                    <div class="bg-white rounded-lg shadow overflow-hidden">
+                        <table class="w-full">
+                            <thead class="bg-gray-50">
+                                <tr>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">From</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Subject</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Date</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Status</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-gray-200">
+                                <template x-for="message in contactMessages" :key="message.id">
+                                    <tr :class="!message.read ? 'bg-blue-50' : ''">
+                                        <td class="px-6 py-4">
+                                            <div>
+                                                <div class="text-sm font-medium text-gray-900" x-text="message.name"></div>
+                                                <div class="text-sm text-gray-500" x-text="message.email"></div>
+                                            </div>
+                                        </td>
+                                        <td class="px-6 py-4">
+                                            <div class="text-sm text-gray-900" x-text="message.subject"></div>
+                                        </td>
+                                        <td class="px-6 py-4 text-sm text-gray-500" x-text="formatDate(message.created_at)"></td>
+                                        <td class="px-6 py-4">
+                                            <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full"
+                                                  :class="message.read ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'"
+                                                  x-text="message.read ? 'Read' : 'Unread'">
+                                            </span>
+                                        </td>
+                                        <td class="px-6 py-4 text-sm">
+                                            <button @click="viewMessage(message)" class="text-blue-600 hover:text-blue-900 mr-3">
+                                                <i class="fas fa-eye"></i>
+                                            </button>
+                                            <button @click="toggleMessageRead(message)" class="text-green-600 hover:text-green-900 mr-3">
+                                                <i :class="message.read ? 'fas fa-envelope' : 'fas fa-envelope-open'"></i>
+                                            </button>
+                                            <button @click="deleteContactMessage(message.id)" class="text-red-600 hover:text-red-900">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                        </td>
+                                    </tr>
+                                </template>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Newsletter Section -->
+                <div x-show="currentSection === 'newsletter'" x-cloak>
+                    <div class="flex justify-between items-center mb-6">
+                        <h3 class="text-xl font-semibold">Newsletter Subscribers</h3>
+                        <div class="text-sm text-gray-600">
+                            Total: <span x-text="newsletterStats.total"></span> | 
+                            Active: <span x-text="newsletterStats.active"></span>
+                        </div>
+                    </div>
+
+                    <!-- Subscribers Table -->
+                    <div class="bg-white rounded-lg shadow overflow-hidden">
+                        <table class="w-full">
+                            <thead class="bg-gray-50">
+                                <tr>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Email</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Name</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Status</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Subscribed</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-gray-200">
+                                <template x-for="subscriber in newsletterSubscribers" :key="subscriber.id">
+                                    <tr>
+                                        <td class="px-6 py-4 text-sm text-gray-900" x-text="subscriber.email"></td>
+                                        <td class="px-6 py-4 text-sm text-gray-900" x-text="subscriber.name || 'N/A'"></td>
+                                        <td class="px-6 py-4">
+                                            <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full"
+                                                  :class="subscriber.status === 'active' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'"
+                                                  x-text="subscriber.status">
+                                            </span>
+                                        </td>
+                                        <td class="px-6 py-4 text-sm text-gray-500" x-text="formatDate(subscriber.subscribed_at)"></td>
+                                        <td class="px-6 py-4 text-sm">
+                                            <button @click="deleteSubscriber(subscriber.id)" class="text-red-600 hover:text-red-900">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                        </td>
+                                    </tr>
+                                </template>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Appointments Section -->
+                <div x-show="currentSection === 'appointments'" x-cloak>
+                    <div class="flex justify-between items-center mb-6">
+                        <h3 class="text-xl font-semibold">Appointments</h3>
+                        <button @click="showCreateModal('slots')" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">
+                            <i class="fas fa-plus mr-2"></i>New Slot
+                        </button>
+                    </div>
+
+                    <!-- Appointments Table -->
+                    <div class="bg-white rounded-lg shadow overflow-hidden">
+                        <table class="w-full">
+                            <thead class="bg-gray-50">
+                                <tr>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Reference</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Client</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Date & Time</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Subject</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Status</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-gray-200">
+                                <template x-for="appointment in appointments" :key="appointment.id">
+                                    <tr>
+                                        <td class="px-6 py-4 text-sm font-mono" x-text="appointment.reference_code"></td>
+                                        <td class="px-6 py-4">
+                                            <div>
+                                                <div class="text-sm font-medium text-gray-900" x-text="appointment.name"></div>
+                                                <div class="text-sm text-gray-500" x-text="appointment.email"></div>
+                                            </div>
+                                        </td>
+                                        <td class="px-6 py-4">
+                                            <div>
+                                                <div class="text-sm text-gray-900" x-text="formatDate(appointment.appointment_date)"></div>
+                                                <div class="text-sm text-gray-500" x-text="`${appointment.slot.start_time} - ${appointment.slot.end_time}`"></div>
+                                            </div>
+                                        </td>
+                                        <td class="px-6 py-4 text-sm text-gray-900" x-text="appointment.subject"></td>
+                                        <td class="px-6 py-4">
+                                            <select @change="updateAppointmentStatus(appointment.reference_code, $event.target.value)" 
+                                                    :value="appointment.status" 
+                                                    class="text-xs border rounded px-2 py-1">
+                                                <option value="pending">Pending</option>
+                                                <option value="confirmed">Confirmed</option>
+                                                <option value="completed">Completed</option>
+                                                <option value="cancelled">Cancelled</option>
+                                            </select>
+                                        </td>
+                                        <td class="px-6 py-4 text-sm">
+                                            <button @click="viewAppointment(appointment)" class="text-blue-600 hover:text-blue-900 mr-3">
+                                                <i class="fas fa-eye"></i>
+                                            </button>
+                                            <button @click="deleteAppointment(appointment.reference_code)" class="text-red-600 hover:text-red-900">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                        </td>
+                                    </tr>
+                                </template>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- About/Skills Section -->
+                <div x-show="currentSection === 'about'" x-cloak>
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                        <!-- Content Management -->
+                        <div>
+                            <div class="flex justify-between items-center mb-4">
+                                <h3 class="text-xl font-semibold">Content</h3>
+                                <button @click="showCreateModal('content')" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">
+                                    <i class="fas fa-plus mr-2"></i>New Content
+                                </button>
+                            </div>
+                            <div class="space-y-4">
+                                <template x-for="(content, type) in aboutContent" :key="type">
+                                    <div class="bg-white p-4 rounded-lg shadow">
+                                        <div class="flex justify-between items-center mb-2">
+                                            <h4 class="font-semibold" x-text="type"></h4>
+                                            <button @click="editContent(content)" class="text-blue-600 hover:text-blue-900">
+                                                <i class="fas fa-edit"></i>
+                                            </button>
+                                        </div>
+                                        <p class="text-sm text-gray-600" x-text="content.title"></p>
+                                    </div>
+                                </template>
+                            </div>
+                        </div>
+
+                        <!-- Skills Management -->
+                        <div>
+                            <div class="flex justify-between items-center mb-4">
+                                <h3 class="text-xl font-semibold">Skills</h3>
+                                <button @click="showCreateModal('skills')" class="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600">
+                                    <i class="fas fa-plus mr-2"></i>New Skill
+                                </button>
+                            </div>
+                            <div class="space-y-4">
+                                <template x-for="category in skillCategories" :key="category">
+                                    <div class="bg-white p-4 rounded-lg shadow">
+                                        <h4 class="font-semibold mb-2" x-text="category"></h4>
+                                        <template x-for="skill in getSkillsByCategory(category)">
+                                            <div class="flex justify-between items-center py-1">
+                                                <span class="text-sm" x-text="skill.name"></span>
+                                                <div class="flex items-center space-x-2">
+                                                    <span class="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded" x-text="skill.proficiency + '/10'"></span>
+                                                    <button @click="editSkill(skill)" class="text-blue-600 hover:text-blue-900">
+                                                        <i class="fas fa-edit text-xs"></i>
+                                                    </button>
+                                                    <button @click="deleteSkill(skill.id)" class="text-red-600 hover:text-red-900">
+                                                        <i class="fas fa-trash text-xs"></i>
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </template>
+                                    </div>
+                                </template>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <!-- Modals will be added in separate files for better organization -->
+    <div id="modals"></div>
+
+    <script src="admin.js"></script>
+</body>
+</html>
