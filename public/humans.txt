@@ -1,0 +1,20 @@
+/* TEAM */
+Developer: Reynan Tolentino
+Contact: hello@reynantlntno.dev
+From: Philippines
+GitHub: https://github.com/reynantlntno
+LinkedIn: https://www.linkedin.com/in/reynan-fuertez/
+
+/* THANKS */
+Vue.js Team: https://vuejs.org/
+Vite Team: https://vitejs.dev/
+Tailwind CSS: https://tailwindcss.com/
+Netlify: https://netlify.com/
+
+/* SITE */
+Last update: 2025/06/06
+Language: English
+Standards: HTML5, CSS3, JavaScript ES6+
+Components: Vue.js 3, Vite, Tailwind CSS
+Software: VS Code, Git
+Backend: Netlify Functions, MySQL
