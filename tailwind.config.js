@@ -182,5 +182,28 @@ export default {
     require('@tailwindcss/typography'),
     require('@tailwindcss/forms'),
     require('@tailwindcss/aspect-ratio'),
+    // Custom plugin to handle hover states
+    function({ addUtilities }) {
+      addUtilities({
+        '.hover-none': {
+          '@media (hover: none)': {
+            '&:hover': {
+              'background-color': 'revert !important',
+              'color': 'revert !important', 
+              'transform': 'none !important',
+              'box-shadow': 'revert !important',
+            },
+          },
+        },
+        '.touch-active': {
+          '@media (hover: none) and (pointer: coarse)': {
+            '&:active': {
+              'transform': 'scale(0.95)',
+              'transition': 'transform 0.1s ease',
+            },
+          },
+        },
+      })
+    },
   ],
 }

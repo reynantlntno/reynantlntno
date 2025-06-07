@@ -252,6 +252,58 @@ html {
   @apply flex items-center space-x-1 hover:text-carbon-200 cursor-pointer;
 }
 
+/* Enhanced hover detection and disabling */
+@media (hover: none) {
+  /* Disable hover effects on devices that don't support hover */
+  *:hover {
+    background-color: revert !important;
+    color: revert !important;
+    transform: none !important;
+    box-shadow: revert !important;
+    border-color: revert !important;
+    opacity: revert !important;
+  }
+  
+  /* Specifically target Tailwind hover utilities */
+  [class*="hover:"]:hover {
+    background-color: revert !important;
+    color: revert !important;
+    transform: none !important;
+    box-shadow: revert !important;
+    border-color: revert !important;
+    opacity: revert !important;
+    scale: revert !important;
+  }
+}
+
+/* No-hover class approach for JavaScript-controlled disabling */
+.no-hover *:hover,
+.no-hover [class*="hover:"]:hover {
+  background-color: revert !important;
+  color: revert !important;
+  transform: none !important;
+  box-shadow: revert !important;
+  border-color: revert !important;
+  opacity: revert !important;
+  scale: revert !important;
+}
+
+/* Touch-friendly alternatives */
+@media (hover: none) and (pointer: coarse) {
+  /* Increase tap targets for better mobile UX */
+  button, a, [role="button"] {
+    min-height: 44px;
+    min-width: 44px;
+  }
+  
+  /* Use active states instead of hover */
+  button:active,
+  a:active,
+  [role="button"]:active {
+    @apply bg-accent-600 transform scale-95;
+  }
+}
+
 /* Responsive Design */
 @media (max-width: 768px) {
   .terminal-window {
