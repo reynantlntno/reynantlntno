@@ -662,22 +662,29 @@ const fetchAvailableDatesForMonth = async (year, month) => {
   availableDatesLoading.value = true
   
   try {
-    // Calculate first and last day of the month
+    // Calculate first and last day of the month in Philippines timezone
     const firstDay = new Date(year, month, 1)
     const lastDay = new Date(year, month + 1, 0)
     
     // Format as YYYY-MM-DD
-    const startDate = firstDay.toISOString().split('T')[0]
-    const endDate = lastDay.toISOString().split('T')[0]
+    const startDate = `${year}-${String(month + 1).padStart(2, '0')}-01`
+    const endDate = `${year}-${String(month + 1).padStart(2, '0')}-${String(lastDay.getDate()).padStart(2, '0')}`
+    
+    console.log('Fetching dates for month:', { year, month, startDate, endDate })
     
     // Fetch available dates from the appointments store
     const result = await appointmentsStore.fetchAvailableDateRange(startDate, endDate)
     
     if (result.success && result.data?.dates) {
       availableDates.value = result.data.dates
+      console.log('Available dates received:', result.data.dates.slice(0, 10))
+    } else {
+      console.error('Failed to fetch available dates:', result.error)
+      availableDates.value = []
     }
   } catch (error) {
     console.error('Error fetching available dates:', error)
+    availableDates.value = []
   } finally {
     availableDatesLoading.value = false
   }

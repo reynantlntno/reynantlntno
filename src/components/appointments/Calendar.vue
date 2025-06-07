@@ -196,6 +196,29 @@ const currentDate = ref(new Date())
 const currentMonth = ref(new Date().getMonth())
 const currentYear = ref(new Date().getFullYear())
 
+// Helper function to create Philippines timezone date
+const createPhilippinesDate = (year, month, day = 1) => {
+  // Create date in Philippines timezone (UTC+8)
+  const date = new Date()
+  date.setFullYear(year, month, day)
+  // Adjust for Philippines timezone
+  const offset = date.getTimezoneOffset()
+  const philippinesOffset = -480 // UTC+8 in minutes
+  return new Date(date.getTime() + (offset + philippinesOffset) * 60000)
+}
+
+// Helper function to format date consistently
+const formatDateConsistent = (date) => {
+  if (!date) return null
+  
+  // Ensure we're working with Philippines timezone
+  const year = date.getFullYear()
+  const month = String(date.getMonth() + 1).padStart(2, '0')
+  const day = String(date.getDate()).padStart(2, '0')
+  
+  return `${year}-${month}-${day}`
+}
+
 // Computed
 const dayHeaders = computed(() => ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'])
 
@@ -211,17 +234,34 @@ const calendarDays = computed(() => {
   const startDate = new Date(firstDay)
   startDate.setDate(startDate.getDate() - firstDay.getDay())
 
+  console.log('Calendar Debug:', {
+    currentMonth: currentMonth.value,
+    currentYear: currentYear.value,
+    availableDates: props.availableDates.slice(0, 5),
+    firstDay: firstDay.toISOString(),
+    lastDay: lastDay.toISOString()
+  })
+
   // Generate 42 days (6 weeks)
   for (let i = 0; i < 42; i++) {
     const date = new Date(startDate)
     date.setDate(startDate.getDate() + i)
     
-    const dateString = formatDateForInput(date)
+    const dateString = formatDateConsistent(date)
     const isCurrentMonth = date.getMonth() === currentMonth.value
     const isSelectable = isCurrentMonth && 
                         isFutureDate(date) && 
                         date >= props.minDate && 
                         date <= props.maxDate
+    
+    const hasSlots = props.availableDates.includes(dateString)
+    
+    console.log(`Date ${dateString}:`, {
+      isCurrentMonth,
+      isSelectable,
+      hasSlots,
+      inAvailableDates: props.availableDates.includes(dateString)
+    })
     
     days.push({
       key: `${date.getFullYear()}-${date.getMonth()}-${date.getDate()}`,
@@ -232,7 +272,7 @@ const calendarDays = computed(() => {
       isToday: isToday(date),
       isSelected: props.selectedDate === dateString,
       isSelectable: isSelectable,
-      hasSlots: props.availableDates.includes(dateString)
+      hasSlots: hasSlots
     })
   }
 
@@ -241,17 +281,20 @@ const calendarDays = computed(() => {
 
 const canGoPrevious = computed(() => {
   const prevMonth = new Date(currentYear.value, currentMonth.value - 1, 1)
-  return prevMonth >= new Date(props.minDate.getFullYear(), props.minDate.getMonth(), 1)
+  const minMonth = new Date(props.minDate.getFullYear(), props.minDate.getMonth(), 1)
+  return prevMonth >= minMonth
 })
 
 const canGoNext = computed(() => {
   const nextMonth = new Date(currentYear.value, currentMonth.value + 1, 1)
-  return nextMonth <= new Date(props.maxDate.getFullYear(), props.maxDate.getMonth(), 1)
+  const maxMonth = new Date(props.maxDate.getFullYear(), props.maxDate.getMonth(), 1)
+  return nextMonth <= maxMonth
 })
 
 // Methods
 const selectDate = (dateObj) => {
   if (!dateObj.isSelectable) return
+  console.log('Date selected:', dateObj.dateString)
   emit('date-selected', dateObj.dateString)
 }
 
@@ -284,13 +327,21 @@ const nextMonth = () => {
 // Initialize calendar to selected date or current date
 watch(() => props.selectedDate, (newDate) => {
   if (newDate) {
-    const date = new Date(newDate)
+    const date = new Date(newDate + 'T00:00:00+08:00') // Force Philippines timezone
     currentMonth.value = date.getMonth()
     currentYear.value = date.getFullYear()
   }
 }, { immediate: true })
 
+watch(() => props.availableDates, (newDates) => {
+  console.log('Available dates updated:', newDates?.slice(0, 10))
+}, { deep: true })
+
 onMounted(() => {
+  // Always start with current month on first load
+  const now = new Date()
+  currentMonth.value = now.getMonth()
+  currentYear.value = now.getFullYear()
   emit('month-changed', currentYear.value, currentMonth.value)
 })
 </script>

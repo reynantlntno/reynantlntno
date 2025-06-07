@@ -279,9 +279,16 @@ export const useAppointmentsStore = defineStore('appointments', () => {
     error.value = null
 
     try {
-      const response = await appointmentsApi.getAvailableDateRange(startDate, endDate)
+      // Ensure dates are in correct format and timezone
+      const actualStartDate = startDate
+      const actualEndDate = endDate
+
+      console.log('Store: Fetching date range:', { start: actualStartDate, end: actualEndDate })
+
+      const response = await appointmentsApi.getAvailableDateRange(actualStartDate, actualEndDate)
       
       if (response.success) {
+        console.log('Store: Received available dates:', response.data.dates?.slice(0, 10))
         return { success: true, data: response.data }
       } else {
         throw new Error(response.error)

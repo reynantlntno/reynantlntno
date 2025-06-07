@@ -8,7 +8,24 @@ import { sendEmail } from './lib/email.js'
 function formatDateForInput(date) {
   if (!date) return null
   const d = new Date(date)
-  return d.toISOString().split('T')[0] // Returns YYYY-MM-DD format
+  
+  // If date is already a string in YYYY-MM-DD format, return as is
+  if (typeof date === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(date)) {
+    return date
+  }
+  
+  // Convert to Philippines timezone (UTC+8)
+  const utc = d.getTime() + (d.getTimezoneOffset() * 60000)
+  const philippinesTime = new Date(utc + (8 * 3600000)) // UTC+8
+  
+  return philippinesTime.toISOString().split('T')[0]
+}
+
+function getPhilippinesDate() {
+  const now = new Date()
+  // Convert to Philippines timezone (UTC+8)
+  const utc = now.getTime() + (now.getTimezoneOffset() * 60000)
+  return new Date(utc + (8 * 3600000))
 }
 
 const handler = asyncHandler(async (event, context) => {
@@ -56,7 +73,7 @@ const handler = asyncHandler(async (event, context) => {
       // Get available slots for a specific date
       if (queryParams.date) {
         const { date } = queryParams
-        const requestedDate = new Date(date)
+        const requestedDate = new Date(date + 'T00:00:00+08:00') // Force Philippines timezone
         const dayOfWeek = requestedDate.getDay()
 
         const slotsQuery = `
@@ -94,56 +111,100 @@ const handler = asyncHandler(async (event, context) => {
         }, 'Available slots retrieved successfully', rateLimit.rateLimitHeaders)
       }
 
-      // Add this new handler for date range
+      // Fix date range handler - Alternative approach
       if (queryParams.startDate && queryParams.endDate) {
         try {
           console.log('Date range request:', { startDate: queryParams.startDate, endDate: queryParams.endDate })
           const { startDate, endDate } = queryParams
           
-          // Query to get dates with available slots in the date range
-          const availableDatesQuery = `
-            SELECT DISTINCT availability.appointment_date
-            FROM (
-              SELECT dates.appointment_date, s.id as slot_id, 
-                     COUNT(CASE WHEN a.status NOT IN ('cancelled') THEN 1 ELSE NULL END) as booked_count,
-                     s.capacity
-              FROM (
-                SELECT DATE(CAST(? AS DATE) + INTERVAL (a.a + (10 * b.a) + (100 * c.a)) DAY) as appointment_date
-                FROM (SELECT 0 as a UNION SELECT 1 UNION SELECT 2 UNION SELECT 3 UNION SELECT 4 UNION SELECT 5 UNION SELECT 6 UNION SELECT 7 UNION SELECT 8 UNION SELECT 9) as a
-                CROSS JOIN (SELECT 0 as a UNION SELECT 1 UNION SELECT 2 UNION SELECT 3 UNION SELECT 4 UNION SELECT 5 UNION SELECT 6 UNION SELECT 7 UNION SELECT 8 UNION SELECT 9) as b
-                CROSS JOIN (SELECT 0 as a UNION SELECT 1 UNION SELECT 2 UNION SELECT 3 UNION SELECT 4 UNION SELECT 5 UNION SELECT 6 UNION SELECT 7 UNION SELECT 8 UNION SELECT 9) as c
-                WHERE DATE(CAST(? AS DATE) + INTERVAL (a.a + (10 * b.a) + (100 * c.a)) DAY) <= CAST(? AS DATE)
-              ) as dates
-              INNER JOIN t_appointment_slots s ON 
-                s.is_active = 1 AND (
-                  (s.recurring = 1 AND s.day_of_week = WEEKDAY(dates.appointment_date) + 1) 
-                  OR (s.recurring = 0 AND s.specific_date = dates.appointment_date)
-                )
-              LEFT JOIN t_appointments a ON s.id = a.slot_id AND a.appointment_date = dates.appointment_date
-              GROUP BY dates.appointment_date, s.id, s.capacity
-            ) as availability
-            WHERE availability.booked_count < availability.capacity
-            ORDER BY availability.appointment_date ASC
+          // Ensure we always start from today if startDate is in the past
+          const today = getPhilippinesDate()
+          const todayString = formatDateForInput(today)
+          const actualStartDate = startDate < todayString ? todayString : startDate
+          
+          console.log('Adjusted date range:', { original: startDate, actual: actualStartDate, end: endDate })
+          
+          // Use a simpler approach: get all active slots and generate dates in JavaScript
+          const slotsQuery = `
+            SELECT id, day_of_week, specific_date, start_time, end_time, capacity, recurring
+            FROM t_appointment_slots 
+            WHERE is_active = 1
           `
           
-          const datesResult = await executeQuery(availableDatesQuery, [startDate, startDate, endDate])
+          const slotsResult = await executeQuery(slotsQuery)
           
-          console.log('Query result count:', datesResult?.data?.length || 0)
-          console.log('First date in result:', datesResult?.data?.[0]?.appointment_date)
-          
-          if (!datesResult.success) {
-            return errorResponse('Failed to fetch available dates', 500)
+          if (!slotsResult.success) {
+            console.error('Slots query error:', slotsResult.error)
+            return errorResponse('Failed to fetch slots', 500)
           }
           
-          // Format dates in YYYY-MM-DD format
-          const availableDates = datesResult.data.map(item => 
-            formatDateForInput(new Date(item.appointment_date))
-          )
+          const slots = slotsResult.data
+          const availableDates = new Set()
+          
+          // Generate date range in JavaScript
+          const start = new Date(actualStartDate + 'T00:00:00+08:00') // Force Philippines timezone
+          const endPlusOne = new Date(endDate + 'T23:59:59+08:00')
+          endPlusOne.setDate(endPlusOne.getDate() + 1) // Add one day to ensure we include the end date
+          
+          for (let d = new Date(start); d < endPlusOne; d.setUTCDate(d.getUTCDate() + 1)) {
+            const dateString = d.toISOString().split('T')[0]
+            const dayOfWeek = d.getUTCDay()
+            
+            console.log(`Processing date: ${dateString} (day of week: ${dayOfWeek})`)
+            
+            // Check if any slot is available for this date
+            const availableSlots = slots.filter(slot => {
+              // Check if this slot applies to this date
+              const slotMatches = slot.recurring === 1 
+                ? slot.day_of_week === dayOfWeek
+                : slot.specific_date && formatDateForInput(new Date(slot.specific_date)) === dateString
+              
+              return slotMatches
+            })
+            
+            if (availableSlots.length > 0) {
+              console.log(`Found ${availableSlots.length} potential slots for ${dateString}`)
+              
+              let hasAvailableSlot = false
+              // Check appointment counts for each slot
+              for (const slot of availableSlots) {
+                const appointmentCountQuery = `
+                  SELECT COUNT(*) as count
+                  FROM t_appointments 
+                  WHERE slot_id = ? 
+                    AND DATE(appointment_date) = ?
+                    AND status NOT IN ('cancelled')
+                `
+                
+                const countResult = await executeQuery(appointmentCountQuery, [slot.id, dateString])
+                
+                if (countResult.success) {
+                  const bookedCount = countResult.data[0].count || 0
+                  console.log(`Slot ${slot.id}: ${bookedCount}/${slot.capacity} booked`)
+                  if (bookedCount < slot.capacity) {
+                    availableDates.add(dateString)
+                    hasAvailableSlot = true
+                    // Don't break here! Continue checking other slots
+                  }
+                }
+              }
+              
+              if (!hasAvailableSlot) {
+                console.log(`No available capacity for date: ${dateString}`)
+              }
+            } else {
+              console.log(`No slots configured for ${dateString}`)
+            }
+          }
+          
+          const sortedDates = Array.from(availableDates).sort()
+          
+          console.log('Available dates found:', sortedDates.slice(0, 10)) // Log first 10 dates
           
           return successResponse({ 
-            startDate,
+            startDate: actualStartDate,
             endDate, 
-            dates: availableDates 
+            dates: sortedDates 
           }, 'Available dates retrieved successfully', rateLimit.rateLimitHeaders)
         } catch (error) {
           console.error('Date range error details:', error)
@@ -445,6 +506,15 @@ const handler = asyncHandler(async (event, context) => {
 
       return errorResponse('Invalid type parameter. Use "appointment" or "slot"', 400)
     }
+
+    // Add this after your slots query
+    console.log('Available slots configuration:', slots.map(s => ({
+      id: s.id,
+      recurring: s.recurring,
+      day: s.day_of_week,
+      specific: s.specific_date,
+      active: s.is_active
+    })));
 
     return errorResponse('Method not allowed', 405)
   } catch (error) {

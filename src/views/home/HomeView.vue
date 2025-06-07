@@ -180,9 +180,9 @@
           </p>
         </div>
 
-        <!-- Skills Grid - No Windows! -->
+        <!-- Skills Grid - Consistent Loading -->
         <div v-if="aboutLoading" class="flex justify-center">
-          <Loader variant="terminal" size="lg" text="loading skills..." />
+          <Loader size="lg" text="Loading skills..." />
         </div>
 
         <div v-else-if="aboutError" class="text-center">
@@ -228,14 +228,20 @@
         </div>
 
         <div v-if="projectsLoading" class="flex justify-center">
-          <Loader variant="code" size="lg" text="compiling projects..." />
+          <Loader size="lg" text="Loading projects..." />
         </div>
 
         <div v-else-if="projectsError" class="text-center">
           <div class="bg-syntax-error/10 border border-syntax-error/20 rounded-ide p-6 max-w-md mx-auto">
-            <div class="text-syntax-error font-mono text-sm">Build failed: {{ projectsError }}</div>
+            <div class="text-syntax-error font-mono text-sm">
+              <div class="flex items-center space-x-2 mb-2">
+                <span class="text-syntax-comment">$</span>
+                <span>npm run build-projects</span>
+              </div>
+              <div>Error: {{ projectsError }}</div>
+            </div>
             <Button @click="refreshProjects" variant="outline" size="sm" class="mt-4">
-              rebuild.projects()
+              retry.command()
             </Button>
           </div>
         </div>
@@ -283,14 +289,20 @@
         </div>
 
         <div v-if="blogLoading" class="flex justify-center">
-          <Loader variant="spinner" size="lg" text="fetching articles..." />
+          <Loader size="lg" text="Loading articles..." />
         </div>
 
         <div v-else-if="blogError" class="text-center">
           <div class="bg-syntax-error/10 border border-syntax-error/20 rounded-ide p-6 max-w-md mx-auto">
-            <div class="text-syntax-error font-mono text-sm">Failed to load blog posts: {{ blogError }}</div>
+            <div class="text-syntax-error font-mono text-sm">
+              <div class="flex items-center space-x-2 mb-2">
+                <span class="text-syntax-comment">$</span>
+                <span>fetch --articles</span>
+              </div>
+              <div>Error: {{ blogError }}</div>
+            </div>
             <Button @click="refreshBlog" variant="outline" size="sm" class="mt-4">
-              retry.fetch()
+              retry.command()
             </Button>
           </div>
         </div>

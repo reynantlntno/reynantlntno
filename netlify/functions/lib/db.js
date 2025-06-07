@@ -13,7 +13,7 @@ const poolConfig = {
   maxIdle: parseInt(process.env.DB_MAX_IDLE) || 10,
   idleTimeout: parseInt(process.env.DB_IDLE_TIMEOUT) || 60000,
   charset: 'utf8mb4',
-  timezone: '+00:00',
+  timezone: '+08:00', // Change to Philippines timezone
   multipleStatements: false,
   ssl: process.env.DB_SSL === 'true' ? {
     rejectUnauthorized: process.env.NODE_ENV === 'production'
@@ -23,7 +23,7 @@ const poolConfig = {
   connectTimeout: parseInt(process.env.DB_CONNECT_TIMEOUT) || 20000,
   supportBigNumbers: true,
   bigNumberStrings: true,
-  dateStrings: false,
+  dateStrings: true, // Change to true to handle dates as strings
   debug: false,
   trace: false,
 }

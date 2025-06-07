@@ -31,43 +31,49 @@ export const formatRelativeTime = (date) => {
 
 // Format date for HTML input (YYYY-MM-DD)
 export const formatDateForInput = (date) => {
-  try {
-    const parsedDate = typeof date === 'string' ? parseISO(date) : date
-    if (!isValid(parsedDate)) return ''
-    return format(parsedDate, 'yyyy-MM-dd')
-  } catch (error) {
-    console.error('Date input formatting error:', error)
-    return ''
+  if (!date) return null
+  
+  let d = date
+  if (typeof date === 'string') {
+    d = new Date(date)
   }
+  
+  // Create date in Philippines timezone (UTC+8)
+  const year = d.getFullYear()
+  const month = String(d.getMonth() + 1).padStart(2, '0')
+  const day = String(d.getDate()).padStart(2, '0')
+  
+  return `${year}-${month}-${day}`
 }
 
 // Format time for display (12-hour format)
 export const formatTime = (timeString) => {
   if (!timeString) return ''
   
-  try {
-    // Handle HH:MM or HH:MM:SS format
-    const [hours, minutes] = timeString.split(':')
-    const hour = parseInt(hours, 10)
-    const min = minutes || '00'
-    const ampm = hour >= 12 ? 'PM' : 'AM'
-    const displayHour = hour % 12 || 12
-    
-    return `${displayHour}:${min} ${ampm}`
-  } catch (error) {
-    console.error('Time formatting error:', error)
-    return timeString
-  }
+  // Parse time string (HH:mm format)
+  const [hours, minutes] = timeString.split(':').map(Number)
+  const date = new Date()
+  date.setHours(hours, minutes, 0, 0)
+  
+  return date.toLocaleTimeString('en-US', {
+    hour: 'numeric',
+    minute: '2-digit',
+    hour12: true
+  })
 }
 
 // Check if date is in the future
 export const isFutureDate = (date) => {
-  try {
-    const parsedDate = typeof date === 'string' ? parseISO(date) : date
-    return isValid(parsedDate) && isFuture(parsedDate)
-  } catch (error) {
-    return false
-  }
+  if (!date) return false
+  
+  const today = new Date()
+  const checkDate = new Date(date)
+  
+  // Set both dates to start of day for comparison
+  today.setHours(0, 0, 0, 0)
+  checkDate.setHours(0, 0, 0, 0)
+  
+  return checkDate >= today
 }
 
 // Check if date is in the past
@@ -110,14 +116,12 @@ export const getDayOfWeek = (date) => {
 
 // Check if date is today
 export const isToday = (date) => {
-  try {
-    const parsedDate = typeof date === 'string' ? parseISO(date) : date
-    const today = new Date()
-    return isValid(parsedDate) && 
-           parsedDate.getDate() === today.getDate() &&
-           parsedDate.getMonth() === today.getMonth() &&
-           parsedDate.getFullYear() === today.getFullYear()
-  } catch (error) {
-    return false
-  }
+  if (!date) return false
+  
+  const today = new Date()
+  const checkDate = new Date(date)
+  
+  return today.getFullYear() === checkDate.getFullYear() &&
+         today.getMonth() === checkDate.getMonth() &&
+         today.getDate() === checkDate.getDate()
 }
