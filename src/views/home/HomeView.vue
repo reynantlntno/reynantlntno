@@ -36,13 +36,13 @@
         <!-- Particle System -->
         <div class="particles">
           <div 
-            v-for="i in 50" 
+            v-for="i in 100" 
             :key="i"
             class="particle"
             :style="{ 
               left: `${Math.random() * 100}%`,
-              animationDelay: `${Math.random() * 20}s`,
-              animationDuration: `${20 + Math.random() * 10}s`
+              animationDelay: `${Math.random() * 30}s`,
+              animationDuration: `${15 + Math.random() * 20}s`
             }"
           ></div>
         </div>
@@ -484,6 +484,7 @@ onMounted(async () => {
   width: 100%;
   height: 100%;
   overflow: hidden;
+  pointer-events: none;
 }
 
 .particle {
@@ -493,21 +494,24 @@ onMounted(async () => {
   background: linear-gradient(45deg, #007acc, #569cd6);
   border-radius: 50%;
   animation: particle-float infinite linear;
+  bottom: -10px; /* Start from bottom */
 }
 
 @keyframes particle-float {
   0% {
-    transform: translateY(100vh) scale(0);
+    transform: translateY(0) scale(0);
     opacity: 0;
   }
-  10% {
-    opacity: 1;
+  5% {
+    opacity: 0.8;
+    transform: translateY(-50px) scale(1);
   }
-  90% {
-    opacity: 1;
+  95% {
+    opacity: 0.8;
+    transform: translateY(-100vh) scale(1);
   }
   100% {
-    transform: translateY(-100px) scale(1);
+    transform: translateY(-110vh) scale(0);
     opacity: 0;
   }
 }
