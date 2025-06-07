@@ -214,7 +214,7 @@
           <div class="mb-8">
             <div class="flex items-center space-x-2 text-sm font-mono text-carbon-400">
               <span class="text-syntax-comment">//</span>
-              <span>Found {{ displayPosts.length }} article{{ displayPosts.length !== 1 ? 's' : '' }}</span>
+              <span>Found {{ totalArticleCount }} article{{ totalArticleCount !== 1 ? 's' : '' }}</span>
               <span v-if="searchQuery || selectedTag" class="text-accent-400">
                 ({{ searchQuery ? `search: "${searchQuery}"` : '' }}{{ searchQuery && selectedTag ? ', ' : '' }}{{ selectedTag ? `tag: "${selectedTag}"` : '' }})
               </span>
@@ -386,6 +386,16 @@ const displayPosts = computed(() => {
     return posts.value.slice(1)
   }
   return posts.value
+})
+
+// Add this computed property to get the correct article count
+const totalArticleCount = computed(() => {
+  // If we have filters applied, show the actual filtered count
+  if (searchQuery.value || selectedTag.value) {
+    return posts.value.length
+  }
+  // If no filters, we show all posts (including the featured one)
+  return posts.value.length
 })
 
 const getCurrentSearchFilter = () => {

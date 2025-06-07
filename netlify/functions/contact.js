@@ -264,24 +264,29 @@ const handler = asyncHandler(async (event, context) => {
       const replyTemplate = {
         subject: replySubject,
         html: `
-          <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-            <h2 style="color: #065f46; border-bottom: 2px solid #e2e8f0; padding-bottom: 10px;">
-              Reply to Your Message
-            </h2>
-            <p>Hi ${originalMessage.name},</p>
-            <div style="background: #ffffff; padding: 20px; border: 1px solid #e2e8f0; border-radius: 8px; margin: 20px 0;">
-              ${replyMessage.replace(/\n/g, '<br>')}
-            </div>
-            <div style="background: #f8fafc; padding: 15px; border-radius: 8px; margin-top: 20px;">
-              <h4 style="margin-top: 0; color: #475569;">Original Message:</h4>
-              <p><strong>Subject:</strong> ${originalMessage.subject}</p>
-              <p style="font-style: italic; color: #64748b;">${originalMessage.message.replace(/\n/g, '<br>')}</p>
-            </div>
-            <div style="margin-top: 20px; padding: 15px; background: #0f172a; color: #e2e8f0; border-radius: 8px;">
-              <p style="margin: 0; font-size: 14px;">
-                Best regards,<br>
-                ${process.env.SITE_NAME || 'Reynan Tolentino'}
-              </p>
+          <div style="font-family: Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; max-width: 600px; margin: 0 auto; background: #ffffff; color: #262626;">
+            <div style="padding: 32px 24px;">
+              <h2 style="color: #007acc; margin: 0 0 24px 0; font-size: 24px; font-weight: 600; border-bottom: 2px solid #e5e5e5; padding-bottom: 12px;">
+                Reply to Your Message
+              </h2>
+              <p style="color: #262626; font-size: 16px; margin: 0 0 24px 0;">Hi ${originalMessage.name},</p>
+              <div style="background: #ffffff; padding: 24px; border: 1px solid #d4d4d4; border-radius: 8px; margin: 24px 0;">
+                <p style="line-height: 1.6; color: #525252; margin: 0;">${replyMessage.replace(/\n/g, '<br>')}</p>
+              </div>
+              <div style="background: #f5f5f5; padding: 20px; border-radius: 8px; margin-top: 24px; border-left: 4px solid #e5e5e5;">
+                <h4 style="margin: 0 0 16px 0; color: #525252; font-size: 16px; font-weight: 600;">Original Message:</h4>
+                <div style="margin-bottom: 12px;">
+                  <span style="font-weight: 600; color: #262626;">Subject:</span>
+                  <span style="color: #525252; margin-left: 8px;">${originalMessage.subject}</span>
+                </div>
+                <p style="font-style: italic; color: #737373; line-height: 1.6; margin: 0;">${originalMessage.message.replace(/\n/g, '<br>')}</p>
+              </div>
+              <div style="margin-top: 32px; padding: 16px; background: #262626; color: #ffffff; border-radius: 8px; text-align: center;">
+                <p style="margin: 0; font-size: 14px; color: #c4c4c4;">
+                  Best regards,<br>
+                  <span style="color: #ffffff; font-weight: 500;">${process.env.SITE_NAME || 'Reynan Tolentino'}</span>
+                </p>
+              </div>
             </div>
           </div>
         `,

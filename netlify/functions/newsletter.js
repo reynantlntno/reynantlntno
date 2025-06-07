@@ -3,7 +3,7 @@ import { asyncHandler, successResponse, errorResponse, parseBody, getQueryParams
 import { validateData, schemas } from './lib/validation.js'
 import { rateLimitMiddleware } from './lib/rate-limit.js'
 import { requireAuth } from './lib/auth.js'
-import { sendNewsletterConfirmation } from './lib/email.js'
+import { sendNewsletterConfirmation, sendNewsletterUnsubscribe } from './lib/email.js'
 
 const handler = asyncHandler(async (event, context) => {
   // Apply newsletter-specific rate limiting
@@ -87,6 +87,55 @@ const handler = asyncHandler(async (event, context) => {
       return successResponse(responseData, 'Subscription created successfully', rateLimit.rateLimitHeaders)
     }
 
+    // PUBLIC GET - Unsubscribe from newsletter via email link (No authentication required)
+    if (httpMethod === 'GET' && !queryParams.admin && queryParams.email) {
+      const { email } = queryParams
+      
+      if (!email) {
+        return errorResponse('Email parameter is required', 400)
+      }
+
+      // Validate email format
+      const validation = validateData({ email }, { email: schemas.newsletter.email })
+      if (!validation.isValid) {
+        return errorResponse('Invalid email format', 400, validation.errors)
+      }
+
+      const subscriber = await getOne('t_newsletter_subscribers', { email })
+      
+      if (!subscriber) {
+        return errorResponse('Email not found in subscribers list', 404)
+      }
+
+      if (subscriber.status === 'unsubscribed') {
+        return successResponse({
+          email,
+          status: 'already_unsubscribed',
+          message: 'This email is already unsubscribed from the newsletter.'
+        }, 'Already unsubscribed', rateLimit.rateLimitHeaders)
+      }
+
+      // Unsubscribe (soft delete)
+      await updateRecord('t_newsletter_subscribers', {
+        status: 'unsubscribed',
+        unsubscribed_at: new Date()
+      }, { id: subscriber.id })
+
+      // Send unsubscribe confirmation email
+      const emailResult = await sendNewsletterUnsubscribe(email, subscriber.name)
+
+      if (!emailResult.success) {
+        console.error('Failed to send unsubscribe confirmation:', emailResult.error)
+        // Don't fail the request if email fails, unsubscription is still processed
+      }
+
+      return successResponse({
+        email,
+        status: 'unsubscribed',
+        message: 'You have been successfully unsubscribed from the newsletter.'
+      }, 'Unsubscribed successfully', rateLimit.rateLimitHeaders)
+    }
+
     // PUBLIC DELETE - Unsubscribe from newsletter (No authentication required)
     if (httpMethod === 'DELETE' && !queryParams.admin) {
       const { email } = queryParams
@@ -116,6 +165,14 @@ const handler = asyncHandler(async (event, context) => {
         status: 'unsubscribed',
         unsubscribed_at: new Date()
       }, { id: subscriber.id })
+
+      // Send unsubscribe confirmation email
+      const emailResult = await sendNewsletterUnsubscribe(email, subscriber.name)
+
+      if (!emailResult.success) {
+        console.error('Failed to send unsubscribe confirmation:', emailResult.error)
+        // Don't fail the request if email fails, unsubscription is still processed
+      }
 
       return successResponse({
         email,
