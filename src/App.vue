@@ -48,6 +48,13 @@ onMounted(() => {
   initTheme()
   detectHoverCapability()
   
+  // Clear fallback loading styles
+  document.body.style.overflow = ''
+  const fallbackContainer = document.querySelector('.fallback-container')
+  if (fallbackContainer) {
+    fallbackContainer.remove()
+  }
+  
   // Listen for media query changes (useful for devices that can switch between modes)
   const hoverMediaQuery = window.matchMedia('(hover: hover)')
   hoverMediaQuery.addEventListener('change', detectHoverCapability)
