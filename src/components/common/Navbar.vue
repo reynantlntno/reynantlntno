@@ -349,14 +349,11 @@ onUnmounted(() => {
 }
 
 .menu-item-enter {
-  animation: item-fade-in 0.5s ease-out forwards;
-  /* Remove initial opacity: 0 and transform to prevent invisible items */
   opacity: 1;
   transform: translateX(0);
 }
 
-/* Only apply animation on devices that support it properly */
-@media (hover: hover) and (pointer: fine) {
+@media (min-width: 768px) {
   .menu-item-enter {
     opacity: 0;
     transform: translateX(-20px);
@@ -472,15 +469,6 @@ button:focus {
   .menu-item-enter {
     opacity: 1;
     transform: translateX(0);
-  }
-}
-
-/* Ensure visibility on touch devices */
-@media (hover: none) and (pointer: coarse) {
-  .menu-item-enter {
-    opacity: 1 !important;
-    transform: translateX(0) !important;
-    animation: none;
   }
 }
 </style>
