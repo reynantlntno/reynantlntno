@@ -271,11 +271,19 @@ html {
 /* Responsive Design */
 @media (max-width: 768px) {
   .terminal-window {
-    @apply rounded-none border-x-0;
+    @apply rounded-ide border border-carbon-700;
+    /* Remove the rounded-none and border-x-0 overrides */
   }
   
   .code-block {
-    @apply rounded-none border-x-0;
+    @apply rounded-ide border border-carbon-700;
+    /* Remove the rounded-none and border-x-0 overrides */
+  }
+  
+  /* Optional: Add some margin to prevent edge-to-edge on very small screens */
+  .terminal-window,
+  .code-block {
+    @apply mx-2;
   }
 }
 

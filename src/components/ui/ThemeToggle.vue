@@ -3,7 +3,7 @@
   <div class="relative">
     <button
       @click="cycleTheme"
-      :title="`Current theme: ${getThemeDisplayName()}`"
+      :title="`Current theme: ${getThemeLabel()}`"
       class="group relative flex items-center space-x-2 px-3 py-1.5 rounded-ide bg-carbon-800/50 hover:bg-carbon-700/50 dark:bg-carbon-900/50 dark:hover:bg-carbon-800/50 border border-carbon-700/30 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-accent-500/50"
     >
       <!-- Theme Icon -->
@@ -22,7 +22,7 @@
       
       <!-- Theme Label -->
       <span class="text-xs font-mono text-carbon-300 group-hover:text-carbon-100 transition-colors">
-        {{ getThemeDisplayName().toLowerCase() }}
+        {{ getThemeLabel() }}
       </span>
       
       <!-- Indicator Dot -->
@@ -38,7 +38,7 @@
     >
       <div class="flex items-center space-x-2">
         <span class="text-syntax-comment">//</span>
-        <span>theme: {{ getThemeDisplayName().toLowerCase() }}</span>
+        <span>theme: {{ getThemeLabel() }}</span>
       </div>
       <div class="absolute -top-1 left-1/2 transform -translate-x-1/2 w-2 h-2 bg-carbon-950 border-l border-t border-carbon-700/50 rotate-45"></div>
     </div>
@@ -56,8 +56,8 @@ const getCurrentThemeStyle = () => {
   switch (theme) {
     case 'light':
       return {
-        bg: 'bg-gradient-to-br from-slate-100 to-slate-200',
-        text: 'text-slate-700',
+        bg: 'bg-gradient-to-br from-carbon-700 to-carbon-800',
+        text: 'text-carbon-300',
         dot: 'bg-syntax-warning'
       }
     case 'dark':
@@ -72,6 +72,20 @@ const getCurrentThemeStyle = () => {
         text: 'text-white',
         dot: 'bg-syntax-success'
       }
+  }
+}
+
+// Map theme names to more accurate display names that reflect they're both dark themes
+const getThemeLabel = () => {
+  const theme = getThemeDisplayName().toLowerCase()
+  
+  switch (theme) {
+    case 'light':
+      return 'carbon'  // lighter shade of dark theme
+    case 'dark':
+      return 'midnight'  // deeper dark theme
+    default:
+      return theme
   }
 }
 </script>
